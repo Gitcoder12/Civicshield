@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CivicShield — Hyderabad Food Safety</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C94A28;--red-l:#E86040;--red-bg:rgba(201,74,40,0.09);--red-br:rgba(201,74,40,0.22);
+  --char:#1C1917;--cream:#FDF6EE;--cream2:#F5EBE0;--cream3:#EDE0D0;
+  --txt:#1C1917;--txt2:#5C504A;--txt3:#9C8A82;--white:#fff;--border:#E8DDD5;
+  --fh:'Syne',sans-serif;--fb:'Montserrat',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--cream);color:var(--txt);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+nav{position:sticky;top:0;z-index:200;background:var(--char);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid rgba(201,74,40,.18);}
+.nav-logo{font-family:var(--fh);font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.nav-dot{width:9px;height:9px;border-radius:50%;background:#E86040;box-shadow:0 0 0 3px rgba(232,96,64,.22);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(232,96,64,.22)}50%{box-shadow:0 0 0 6px rgba(232,96,64,.08)}}
+.nav-sub{font-size:.68rem;font-weight:400;color:rgba(255,255,255,.38);letter-spacing:.3px;}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.nav-link{color:rgba(255,255,255,.5);font-size:.78rem;cursor:pointer;background:none;border:none;font-family:var(--fb);font-weight:400;transition:color .2s;}
+.nav-link:hover{color:#fff;}
+.nav-btn{background:var(--red);color:#fff;font-size:.78rem;font-weight:500;padding:8px 18px;border:none;border-radius:6px;cursor:pointer;transition:background .2s;display:none;font-family:var(--fb);}
+.nav-btn:hover{background:var(--red-l);}
+.disc{background:#fffbf5;border-bottom:1px solid #f0dfc8;padding:.38rem 2.5rem;font-size:.7rem;color:var(--txt3);text-align:center;font-weight:400;letter-spacing:.1px;}
+.page{display:none;animation:fi .22s ease;}
+.page.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.wrap{max-width:1140px;margin:0 auto;padding:1.75rem 1.5rem;}
+
+/* HERO */
+.hero{background:var(--char);border-radius:20px;padding:2.75rem 2.5rem 2.25rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-140px;right:-140px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(201,74,40,.14) 0%,transparent 70%);}
+.hero::after{content:'CIVICSHIELD';position:absolute;right:1.5rem;bottom:.3rem;font-family:var(--fh);font-size:5.5rem;font-weight:800;color:rgba(255,255,255,.022);letter-spacing:-3px;pointer-events:none;user-select:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(201,74,40,.13);border:1px solid rgba(201,74,40,.3);padding:4px 12px;border-radius:20px;margin-bottom:1.25rem;}
+.hbd{width:6px;height:6px;border-radius:50%;background:#E86040;animation:bdot 2s ease infinite;}
+@keyframes bdot{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-badge span{font-size:.67rem;color:rgba(255,255,255,.6);letter-spacing:.9px;text-transform:uppercase;font-weight:500;}
+.hero h1{font-family:var(--fh);font-size:2.3rem;font-weight:800;color:#fff;line-height:1.06;letter-spacing:-1px;margin-bottom:.65rem;}
+.hero h1 em{color:#E86040;font-style:normal;}
+.hero p{font-size:.88rem;color:rgba(255,255,255,.44);max-width:460px;font-weight:300;line-height:1.8;}
+.hero-stats{display:flex;gap:2.2rem;margin-top:2rem;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;}
+.stat-n{font-family:var(--fh);font-size:1.8rem;font-weight:800;color:#fff;line-height:1;}
+.stat-n em{color:#E86040;font-style:normal;}
+.stat-l{font-size:.68rem;color:rgba(255,255,255,.36);margin-top:3px;font-weight:400;letter-spacing:.2px;}
+
+/* HEATMAP */
+.heatmap-section{margin-bottom:1.5rem;}
+.heatmap-toggle{display:flex;align-items:center;gap:8px;font-size:.75rem;font-weight:500;color:var(--txt2);cursor:pointer;margin-bottom:.75rem;user-select:none;}
+.heatmap-toggle svg{width:14px;height:14px;stroke:var(--txt3);fill:none;stroke-width:2;transition:transform .2s;}
+.heatmap-toggle.open svg{transform:rotate(180deg);}
+.heatmap-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem;}
+.area-tile{border-radius:10px;padding:.65rem .75rem;cursor:pointer;transition:all .18s;border:1.5px solid transparent;}
+.area-tile:hover{transform:translateY(-2px);filter:brightness(1.05);}
+.area-tile.active-area{border-color:var(--char);box-shadow:0 4px 12px rgba(28,25,23,.15);}
+.area-tile-name{font-size:.72rem;font-weight:600;line-height:1.3;margin-bottom:2px;}
+.area-tile-count{font-size:.62rem;font-weight:400;opacity:.7;}
+.area-tile-score{font-size:.68rem;font-weight:600;margin-top:3px;}
+
+/* CONTROLS */
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:11px 14px;margin-bottom:1rem;}
+.ci,.cs{padding:7px 11px;border:1px solid var(--cream3);border-radius:6px;font-size:.78rem;background:var(--cream);font-family:var(--fb);font-weight:400;color:var(--txt);outline:none;transition:border-color .2s;}
+.ci{flex:1;min-width:180px;}
+.ci:focus,.cs:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-bg);}
+.quick-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.qf{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:.72rem;font-weight:500;color:var(--txt2);cursor:pointer;transition:all .18s;font-family:var(--fb);}
+.qf:hover,.qf.active{background:var(--red);border-color:var(--red);color:#fff;}
+.qf.active-green{background:#166534;border-color:#166534;color:#fff;}
+.rc{font-size:.7rem;color:var(--txt3);background:var(--cream2);padding:4px 10px;border-radius:20px;white-space:nowrap;margin-left:auto;font-weight:400;}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1.25rem;font-size:.7rem;color:var(--txt3);font-weight:400;}
+.ldot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+
+/* HOTEL GRID */
+.hotel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem;}
+@keyframes ci2{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOTEL CARD */
+.hotel-card{background:var(--white);border-radius:14px;padding:1.15rem 1.3rem;box-shadow:0 1px 4px rgba(28,25,23,.07);border:1px solid var(--border);cursor:pointer;transition:box-shadow .22s,transform .22s,border-color .22s;position:relative;overflow:hidden;animation:ci2 .32s ease both;}
+.hotel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C94A28,#E86040);transform:scaleX(0);transform-origin:left;transition:transform .26s ease;}
+.hotel-card:hover{box-shadow:0 14px 44px rgba(201,74,40,.12);transform:translateY(-2px);border-color:var(--red-br);}
+.hotel-card:hover::before{transform:scaleX(1);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:.5rem;}
+.hotel-name{font-family:var(--fh);font-size:.96rem;font-weight:700;color:var(--txt);letter-spacing:-.2px;margin-bottom:3px;line-height:1.25;}
+.hotel-meta{font-size:.71rem;color:var(--txt3);font-weight:400;line-height:1.5;}
+.sb{width:50px;height:50px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:1rem;flex-shrink:0;line-height:1.1;}
+.sb small{font-size:.54rem;font-weight:400;font-family:var(--fb);opacity:.8;}
+.sg{background:#E8F5E9;color:#2E7D32;}.sy{background:#FFF8E1;color:#B45309;}.sr{background:#FDECEA;color:#C62828;}
+.sbt{height:4px;background:var(--cream2);border-radius:2px;overflow:hidden;margin:.5rem 0;}
+.sbf{height:100%;border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1);}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:.45rem;}
+.bds{background:var(--cream);border-radius:6px;padding:4px 8px;margin-top:.45rem;font-size:.69rem;color:var(--txt2);display:flex;align-items:center;gap:4px;font-weight:400;}
+.bds::before{content:'★';color:var(--red);font-size:.7rem;}
+.ab{background:#FEF3C7;border:1px solid #F59E0B;border-radius:6px;padding:5px 9px;font-size:.69rem;color:#92400E;margin-top:.5rem;font-weight:400;}
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:.63rem;padding:2px 8px;border-radius:20px;font-weight:500;letter-spacing:.05px;}
+.t-v{background:#E8F5E9;color:#2E7D32;}.t-e{background:#FFF8E1;color:#B45309;}.t-n{background:#FDECEA;color:#C62828;}
+.t-ty{background:var(--cream2);color:var(--txt2);}.t-ad{background:#FEF3C7;color:#92400E;}
+.t-fs{background:#EEF2FF;color:#3730A3;}.t-h{background:#E8F5E9;color:#166534;}
+.t-br{background:#EDE9FE;color:#5B21B6;}.t-rp{background:rgba(201,74,40,.1);color:var(--red);}
+.loading{text-align:center;padding:4rem;color:var(--txt3);font-weight:400;grid-column:1/-1;font-size:.85rem;}
+.info-box{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(28,25,23,.06);}
+.box-title{font-family:var(--fh);font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt);margin-bottom:.85rem;padding-bottom:.55rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.box-title::before{content:'';display:inline-block;width:3px;height:13px;background:var(--red);border-radius:2px;flex-shrink:0;}
+.box-badge{font-family:var(--fb);font-size:.62rem;font-weight:500;text-transform:none;letter-spacing:0;padding:2px 8px;border-radius:10px;margin-left:auto;}
+.btn{padding:8px 18px;border-radius:6px;border:none;font-size:.78rem;font-weight:500;cursor:pointer;font-family:var(--fb);transition:all .18s;letter-spacing:.1px;}
+.btn:hover{transform:translateY(-1px);}
+.btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:var(--red-l);}
+.btn-ghost{background:transparent;color:var(--red);border:1.5px solid var(--red);}.btn-ghost:hover{background:var(--red-bg);}
+.btn-mu{background:var(--cream2);color:var(--txt2);border:1px solid var(--border);}.btn-mu:hover{background:var(--cream3);}
+.action-btns{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.detail-hero{background:var(--char);border-radius:20px;padding:1.75rem 2rem;margin-bottom:1.2rem;position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+.detail-hero::before{content:'';position:absolute;top:-100px;right:-100px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(201,74,40,.14) 0%,transparent 70%);}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.65);font-family:var(--fb);font-size:.76rem;font-weight:400;padding:6px 13px;border-radius:6px;cursor:pointer;transition:all .2s;margin-bottom:.9rem;}
+.back-btn:hover{background:rgba(255,255,255,.14);color:#fff;}
+.detail-name{font-family:var(--fh);font-size:1.55rem;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.12;margin-bottom:.45rem;}
+.detail-meta{font-size:.8rem;color:rgba(255,255,255,.43);font-weight:300;line-height:1.8;}
+.sc-circle{width:86px;height:86px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:1.75rem;flex-shrink:0;line-height:1.1;z-index:1;}
+.sc-circle small{font-size:.68rem;font-weight:400;font-family:var(--fb);}
+.fssai-box{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.fssai-shield{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fssai-shield svg{width:21px;height:21px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.fssai-info{flex:1;min-width:140px;}
+.fssai-lbl{font-size:.63rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.fssai-num{font-family:monospace;font-size:.88rem;font-weight:600;color:var(--txt);letter-spacing:.4px;margin:.1rem 0;}
+.fssai-sub{font-size:.7rem;color:var(--txt3);font-weight:300;}
+.fssai-pill{padding:5px 12px;border-radius:20px;font-size:.7rem;font-weight:500;}
+.owner-box{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;}
+.owner-icon{width:36px;height:36px;border-radius:50%;background:var(--char);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.owner-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.owner-name{font-size:.84rem;font-weight:500;color:var(--txt);}
+.owner-phone{font-size:.78rem;color:var(--txt3);font-weight:400;margin-top:1px;}
+.owner-label{font-size:.62rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);margin-bottom:2px;}
+.dish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.55rem;}
+.dish-card{border-radius:9px;padding:.7rem .8rem;border:1px solid var(--border);background:var(--cream);transition:border-color .18s;}
+.dish-card:hover{border-color:var(--red);}
+.dish-name{font-size:.8rem;font-weight:500;color:var(--txt);margin-bottom:2px;}
+.dish-tag{display:inline-block;font-size:.6rem;padding:2px 7px;border-radius:10px;margin-top:3px;font-weight:500;}
+.dt-best{background:rgba(201,74,40,.1);color:var(--red);}
+.dt-healthy{background:#E8F5E9;color:#166534;}
+.dt-popular{background:#EEF2FF;color:#3730A3;}
+.insp-row{display:flex;align-items:center;gap:.85rem;padding:.75rem 0;border-bottom:1px solid var(--cream2);}
+.insp-row:last-child{border-bottom:none;padding-bottom:0;}
+.insp-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a237e,#3730A3);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;}
+.insp-name{font-size:.84rem;font-weight:500;color:var(--txt);}
+.insp-id{font-family:monospace;font-size:.68rem;color:var(--txt3);}
+.insp-verdict{font-size:.72rem;padding:3px 9px;border-radius:10px;font-weight:500;margin-left:auto;flex-shrink:0;}
+.iv-pass{background:#E8F5E9;color:#166534;}.iv-warn{background:#FFF8E1;color:#B45309;}.iv-fail{background:#FDECEA;color:#C62828;}
+.branch-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--cream);cursor:pointer;}
+.branch-row:last-child{border-bottom:none;}
+.branch-row:hover .br-name{color:var(--red);}
+.br-name{font-weight:500;font-size:.84rem;color:var(--txt);}
+.br-area{font-size:.71rem;color:var(--txt3);font-weight:300;}
+.best-b{font-size:.62rem;padding:2px 7px;border-radius:10px;background:rgba(201,74,40,.1);color:var(--red);font-weight:600;margin-left:6px;}
+.nearby-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--cream);cursor:pointer;}
+.nearby-row:last-child{border-bottom:none;}
+.nearby-row:hover .nr-name{color:var(--red);}
+.nr-name{font-weight:500;font-size:.84rem;color:var(--txt);}
+.nr-meta{font-size:.71rem;color:var(--txt3);font-weight:300;}
+.rep-row{display:flex;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--cream2);font-size:.82rem;align-items:flex-start;}
+.rep-row:last-child{border-bottom:none;padding-bottom:0;}
+.rep-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;flex-shrink:0;}
+.rep-av.cust{background:var(--cream2);color:var(--txt3);}
+.rep-av.insp{background:linear-gradient(135deg,#1a237e,#3730A3);color:#fff;font-family:var(--fh);font-size:.62rem;}
+.rep-who{font-weight:500;font-size:.78rem;color:var(--txt);}
+.rep-note{font-size:.78rem;color:var(--txt2);margin-top:2px;line-height:1.55;font-weight:300;}
+.rep-date{font-size:.67rem;color:var(--txt3);margin-left:auto;flex-shrink:0;font-weight:300;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;font-size:.78rem;}
+.dg-item{color:var(--txt3);font-weight:400;}
+.dg-val{font-weight:500;color:var(--txt);display:block;margin-top:1px;}
+.report-wrap{max-width:660px;}
+.form-hdr{display:flex;align-items:center;gap:12px;margin-bottom:1.4rem;}
+.form-title{font-family:var(--fh);font-size:1.45rem;font-weight:800;color:var(--txt);letter-spacing:-.4px;}
+.form-sub{font-size:.78rem;color:var(--txt3);font-weight:300;margin-top:2px;}
+.role-tabs{display:flex;background:var(--cream2);border-radius:10px;padding:4px;margin-bottom:1.2rem;gap:4px;}
+.role-tab{flex:1;padding:8px;border-radius:6px;border:none;font-family:var(--fb);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .2s;color:var(--txt3);background:transparent;}
+.role-tab.active{background:var(--white);color:var(--red);box-shadow:0 1px 4px rgba(28,25,23,.07);}
+.checklist{display:none;}
+.checklist.active{display:block;}
+.check-item{display:flex;align-items:flex-start;gap:11px;padding:8px 0;border-bottom:1px solid var(--cream);font-size:.82rem;}
+.check-item:last-child{border-bottom:none;}
+.check-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--red);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.check-item label{cursor:pointer;color:var(--txt2);line-height:1.5;font-weight:400;}
+.check-item label strong{color:var(--txt);font-weight:500;}
+.alert{padding:.75rem 1rem;border-radius:6px;font-size:.79rem;margin-bottom:.9rem;display:none;border-left:3px solid;line-height:1.6;font-weight:400;}
+.alert.show{display:block;}
+.a-warn{background:#FEF8EC;border-color:#F59E0B;color:#854D0E;}
+.a-info{background:#EFF6FF;border-color:#3B82F6;color:#1D4ED8;}
+textarea,.finp,.fsel{width:100%;border:1px solid var(--cream3);border-radius:6px;padding:9px 12px;font-size:.82rem;font-family:var(--fb);font-weight:400;color:var(--txt);background:var(--cream);outline:none;transition:border-color .2s;}
+textarea{resize:vertical;min-height:85px;}
+textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-bg);}
+.frow{margin-bottom:.9rem;}
+.flbl{display:block;font-size:.76rem;font-weight:500;color:var(--txt);margin-bottom:5px;}
+.upload-zone{border:1.5px dashed var(--cream3);border-radius:10px;padding:.9rem;text-align:center;font-size:.76rem;color:var(--txt3);cursor:pointer;background:var(--cream);transition:all .2s;font-weight:400;}
+.upload-zone:hover{border-color:var(--red);color:var(--red);background:var(--red-bg);}
+.upload-zone input{display:none;}
+.insp-official-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1rem;}
+.success-screen{text-align:center;padding:3rem 1.5rem;display:none;}
+.success-icon{width:60px;height:60px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem;}
+.success-icon svg{width:26px;height:26px;stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.success-id{font-family:monospace;font-size:.76rem;color:var(--txt3);background:var(--cream2);padding:5px 11px;border-radius:6px;display:inline-block;margin:.45rem 0 .9rem;}
+@media(max-width:640px){.wrap{padding:1.1rem 1rem;}nav{padding:0 1.25rem;}.hero{padding:1.75rem 1.4rem;}.hero h1{font-size:1.6rem;}.hotel-grid{grid-template-columns:1fr;}.detail-hero{flex-direction:column;}.action-btns{flex-direction:column;}.btn{width:100%;text-align:center;}.hero-stats{gap:1.4rem;}.detail-grid{grid-template-columns:1fr;}.heatmap-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="goHome()"><div class="nav-dot"></div>CivicShield<span class="nav-sub">Hyderabad</span></div>
+  <div class="nav-right">
+    <button class="nav-link" onclick="goHome()">Directory</button>
+    <button class="nav-btn" id="navBtn" onclick="startReport(null,'customer')">File a Report</button>
+  </div>
+</nav>
+<div class="disc">Community observations only — CivicShield does not make official legal claims about any establishment.</div>
+
+<div id="pg-home" class="page active">
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge"><div class="hbd"></div><span>Live — Hyderabad Region</span></div>
+    <h1>Food safety,<br><em>made public.</em></h1>
+    <p>Citizen reports, FSSAI verification, official inspector audits and dish recommendations for restaurants across Hyderabad.</p>
+    <div class="hero-stats">
+      <div><div class="stat-n" id="sTot">0</div><div class="stat-l">Venues Listed</div></div>
+      <div><div class="stat-n"><em id="sGood">0</em></div><div class="stat-l">Good Standing</div></div>
+      <div><div class="stat-n"><em id="sFssai">0</em></div><div class="stat-l">FSSAI Verified</div></div>
+      <div><div class="stat-n"><em id="sRisk">0</em></div><div class="stat-l">High Risk</div></div>
+    </div>
+  </div>
+
+  <!-- HEATMAP -->
+  <div class="heatmap-section">
+    <div class="heatmap-toggle" id="hmToggle" onclick="toggleHeatmap()">
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      Area Safety Map — click to filter
+    </div>
+    <div class="heatmap-grid" id="hmGrid"></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <input class="ci" id="searchInput" type="text" placeholder="Search by name, area, cuisine, or dish..." oninput="renderGrid()"/>
+    <select class="cs" id="typeFilter" onchange="renderGrid()">
+      <option value="">All Types</option>
+      <option>Restaurant</option><option>Small Hotel</option><option>Student Mess</option>
+      <option>Bakery</option><option>Sweet Shop</option><option>Street Food</option>
+    </select>
+    <select class="cs" id="licFilter" onchange="renderGrid()">
+      <option value="">All Licenses</option>
+      <option value="Valid">FSSAI Valid</option>
+      <option value="Expired">FSSAI Expired</option>
+      <option value="Not Registered">Not Registered</option>
+    </select>
+    <select class="cs" id="sortSel" onchange="renderGrid()">
+      <option value="">Default</option>
+      <option value="sd">Score High→Low</option>
+      <option value="sa">Score Low→High</option>
+      <option value="na">Name A–Z</option>
+    </select>
+    <span class="rc" id="rc"></span>
+  </div>
+  <div class="quick-filters" id="quickFilters">
+    <span class="qf" onclick="setQF(this,'')">All</span>
+    <span class="qf" onclick="setQF(this,'healthy')">✓ Healthy Options</span>
+    <span class="qf" onclick="setQF(this,'fssai')">FSSAI Verified</span>
+    <span class="qf" onclick="setQF(this,'good')">Score 80+</span>
+    <span class="qf" onclick="setQF(this,'risk')">High Risk</span>
+  </div>
+  <div class="legend">
+    <span><span class="ldot" style="background:#2E7D32"></span>80–100 Good</span>
+    <span><span class="ldot" style="background:#B45309"></span>60–79 Caution</span>
+    <span><span class="ldot" style="background:#C62828"></span>0–59 High Risk</span>
+  </div>
+  <div class="hotel-grid" id="hotelGrid"><div class="loading">Loading venues...</div></div>
+</div>
+</div>
+
+<div id="pg-detail" class="page"><div class="wrap" id="detailWrap"></div></div>
+
+<div id="pg-form" class="page">
+<div class="wrap"><div class="report-wrap">
+  <div class="form-hdr">
+    <button class="btn btn-mu" onclick="showPage('pg-detail')">← Back</button>
+    <div><div class="form-title" id="formTitle">File a Report</div><div class="form-sub" id="formHotel"></div></div>
+  </div>
+  <div id="formContent">
+    <div class="info-box" style="margin-bottom:1rem">
+      <div class="box-title">Who are you filing as?</div>
+      <div class="role-tabs">
+        <button class="role-tab active" id="tab-c" onclick="switchRole('customer')">Customer / Visitor</button>
+        <button class="role-tab" id="tab-i" onclick="switchRole('inspector')">FSSAI Food Inspector</button>
+      </div>
+      <div class="checklist active" id="cl-c">
+        <div id="aAlert" class="alert a-warn"><strong>Adulteration suspicion flagged</strong> — will appear publicly on this venue's page.</div>
+        <div id="pAlert" class="alert a-warn"><strong>Food poisoning reported.</strong> FSSAI Helpline: <strong>1800-112-100</strong></div>
+        <div class="check-item"><input type="checkbox" id="cc1" checked/><label for="cc1">Dining area was clean and well-maintained</label></div>
+        <div class="check-item"><input type="checkbox" id="cc2" checked/><label for="cc2">Staff appeared hygienic (gloves, aprons, uniforms)</label></div>
+        <div class="check-item"><input type="checkbox" id="cc3" checked/><label for="cc3">Food looked fresh and properly cooked</label></div>
+        <div class="check-item"><input type="checkbox" id="cc4"/><label for="cc4">Bad or unusual smell detected</label></div>
+        <div class="check-item"><input type="checkbox" id="cc5"/><label for="cc5">Pests or insects observed (cockroach, rat, flies)</label></div>
+        <div class="check-item"><input type="checkbox" id="cc6"/><label for="cc6">Dirty or unclean utensils served</label></div>
+        <div class="check-item"><input type="checkbox" id="cc7" onchange="chkAlerts()"/><label for="cc7"><strong>Food adulteration suspected</strong></label></div>
+        <div class="check-item"><input type="checkbox" id="cc8" onchange="chkAlerts()"/><label for="cc8"><strong>Food poisoning symptoms after eating here</strong></label></div>
+        <div class="check-item"><input type="checkbox" id="cc9"/><label for="cc9">Foreign object found in food</label></div>
+        <div class="check-item"><input type="checkbox" id="cc10"/><label for="cc10">Overcharging / price mismatch from menu</label></div>
+        <div class="check-item"><input type="checkbox" id="cc11"/><label for="cc11">No bill provided on request</label></div>
+      </div>
+      <div class="checklist" id="cl-i">
+        <div class="alert a-info show">Official FSSAI Inspector Audit. Your name and ID will appear publicly on the submitted report.</div>
+        <div class="check-item"><input type="checkbox" id="ci1" checked/><label for="ci1">FSSAI license displayed prominently</label></div>
+        <div class="check-item"><input type="checkbox" id="ci2" checked/><label for="ci2">Food storage safe — raw &amp; cooked separated</label></div>
+        <div class="check-item"><input type="checkbox" id="ci3" checked/><label for="ci3">Temperature control adequate (cold ≤5°C, hot ≥75°C)</label></div>
+        <div class="check-item"><input type="checkbox" id="ci4"/><label for="ci4">Cross contamination observed</label></div>
+        <div class="check-item"><input type="checkbox" id="ci5" checked/><label for="ci5">Ingredient quality acceptable, no expired stock</label></div>
+        <div class="check-item"><input type="checkbox" id="ci6" checked/><label for="ci6">Kitchen sanitation adequate</label></div>
+        <div class="check-item"><input type="checkbox" id="ci7" checked/><label for="ci7">Waste disposal proper and segregated</label></div>
+        <div class="check-item"><input type="checkbox" id="ci8" checked/><label for="ci8">Potable water source verified</label></div>
+        <div class="check-item"><input type="checkbox" id="ci9"/><label for="ci9">Pest control failure observed</label></div>
+        <div class="check-item"><input type="checkbox" id="ci10"/><label for="ci10">Adulterated raw materials found</label></div>
+        <div class="check-item"><input type="checkbox" id="ci11" checked/><label for="ci11">Staff hygiene training certificates available</label></div>
+        <div class="check-item"><input type="checkbox" id="ci12"/><label for="ci12"><strong>Recommend immediate suspension of operations</strong></label></div>
+      </div>
+    </div>
+    <div id="inspBox" style="display:none">
+      <div class="insp-official-box">
+        <div style="font-size:.72rem;font-weight:600;color:#1D4ED8;letter-spacing:.5px;text-transform:uppercase;font-family:'Syne',sans-serif;margin-bottom:.55rem;">Official Inspector Details — Public Record</div>
+        <div class="frow"><label class="flbl">Full Name *</label><input class="finp" id="inspName" type="text" placeholder="e.g. Dr. Anjali Reddy"/></div>
+        <div class="frow"><label class="flbl">FSSAI Inspector ID *</label><input class="finp" id="inspId" type="text" placeholder="e.g. FSSAI/TS/INS/2024/0087"/></div>
+        <div class="frow"><label class="flbl">Designation</label><input class="finp" id="inspDes" type="text" placeholder="e.g. Senior Food Safety Officer, GHMC"/></div>
+        <div class="frow"><label class="flbl">Audit Reference Number</label><input class="finp" id="inspRef" type="text" placeholder="Optional"/></div>
+        <div style="font-size:.7rem;color:#1D4ED8;margin-top:.2rem;font-weight:400;">Submitting false credentials is a cognizable offence under FSSAI Act 2006.</div>
+      </div>
+    </div>
+    <div class="info-box">
+      <div class="box-title">Evidence (Optional)</div>
+      <div class="upload-zone" onclick="document.getElementById('photoInp').click()">Upload Photos (JPG, PNG)<input type="file" id="photoInp" accept="image/*" multiple onchange="showFn(this,'photoN')"/></div>
+      <div id="photoN" style="font-size:.7rem;color:var(--red);margin-top:5px;text-align:center;"></div>
+      <div class="upload-zone" style="margin-top:8px" onclick="document.getElementById('videoInp').click()">Upload Videos (MP4, MOV)<input type="file" id="videoInp" accept="video/*" multiple onchange="showFn(this,'videoN')"/></div>
+      <div id="videoN" style="font-size:.7rem;color:var(--red);margin-top:5px;text-align:center;"></div>
+    </div>
+    <div class="info-box">
+      <div class="box-title">Additional Notes</div>
+      <textarea id="repNotes" placeholder="Describe your observations in detail..."></textarea>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.9rem;font-size:.71rem;color:var(--txt3);line-height:1.7;font-weight:400;">
+      By submitting, you confirm observations are honest and in good faith. Community reports are anonymous. Inspector reports are attributed publicly.
+    </div>
+    <button onclick="submitReport()" style="width:100%;padding:13px;background:var(--red);color:#fff;font-family:'Montserrat',sans-serif;font-size:.92rem;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background .2s;letter-spacing:.2px;" onmouseover="this.style.background='#E86040'" onmouseout="this.style.background='#C94A28'">Submit Report</button>
+  </div>
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--txt);letter-spacing:-.3px;">Report Submitted</h2>
+    <div class="success-id" id="successId"></div>
+    <p style="font-size:.83rem;color:var(--txt3);max-width:360px;margin:0 auto 1.4rem;line-height:1.7;font-weight:300;">Your report is live. FSSAI-flagged violations are forwarded to the regional food safety office within 24 hours.</p>
+    <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-mu" onclick="resetForm()">File Another</button>
+      <button class="btn btn-red" onclick="goHome()">Back to Directory</button>
+    </div>
+  </div>
+</div></div>
+</div>
+
+<script>
+
+const HOTELS = [{"id": 1, "name": "Ohri's Jiva Imperia", "area": "Banjara Hills", "cuisine": "Multi-cuisine Fine Dining", "type": "Restaurant", "fssai": "10519022001001", "fs": "Valid", "insp": "2026-01-10", "score": 96, "adult": false, "chain": "Ohri's Group", "owner": "Srinivas Ohri", "phone": "+91 98490 12345", "dishes": [{"n": "Butter Chicken", "t": "best"}, {"n": "Steamed Fish", "t": "healthy"}, {"n": "Biryani", "t": "popular"}, {"n": "Dal Makhani", "t": "best"}, {"n": "Garden Salad", "t": "healthy"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2026-01-10"}}, {"id": 2, "name": "Chutneys Banjara", "area": "Banjara Hills", "cuisine": "South Indian & Chaat", "type": "Restaurant", "fssai": "10519022001002", "fs": "Valid", "insp": "2026-01-08", "score": 94, "adult": false, "chain": "Chutneys Group", "owner": "Ramesh Reddy", "phone": "+91 98491 23456", "dishes": [{"n": "Pesarattu", "t": "healthy"}, {"n": "Masala Dosa", "t": "best"}, {"n": "Pani Puri", "t": "popular"}, {"n": "Filter Coffee", "t": "best"}, {"n": "Idli Sambar", "t": "healthy"}], "lastInspector": {"name": "K. Venkatesh Rao", "id": "FSSAI/TS/INS/2024/0018", "des": "FSO, Banjara Hills Zone", "verdict": "pass", "date": "2026-01-08"}}, {"id": 3, "name": "Rajdhani Thali", "area": "Banjara Hills", "cuisine": "Rajasthani & Gujarati", "type": "Restaurant", "fssai": "10519022001003", "fs": "Valid", "insp": "2025-12-20", "score": 91, "adult": false, "chain": null, "owner": "Dinesh Patel", "phone": "+91 98492 34567", "dishes": [{"n": "Unlimited Thali", "t": "best"}, {"n": "Dal Baati Churma", "t": "best"}, {"n": "Bajra Roti", "t": "healthy"}, {"n": "Khichdi", "t": "healthy"}], "lastInspector": {"name": "S. Malhotra", "id": "FSSAI/TS/INS/2024/0031", "des": "FSO, Hyderabad North", "verdict": "pass", "date": "2025-12-20"}}, {"id": 4, "name": "Absolute Barbecues", "area": "Banjara Hills", "cuisine": "BBQ & Grills", "type": "Restaurant", "fssai": "10519022001004", "fs": "Valid", "insp": "2025-12-15", "score": 89, "adult": false, "chain": null, "owner": "Vikram Singh", "phone": "+91 98493 45678", "dishes": [{"n": "Grilled Fish", "t": "healthy"}, {"n": "Peri Peri Wings", "t": "popular"}, {"n": "Mushroom Skewers", "t": "healthy"}, {"n": "Grilled Chicken", "t": "best"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2025-12-15"}}, {"id": 5, "name": "Karachi Bakery Road No 1", "area": "Banjara Hills", "cuisine": "Bakery & Biscuits", "type": "Bakery", "fssai": "10519022001006", "fs": "Valid", "insp": "2026-01-02", "score": 92, "adult": false, "chain": "Karachi Bakery", "owner": "Khanchand Ramnani", "phone": "+91 40 2335 0028", "dishes": [{"n": "Fruit Biscuits", "t": "best"}, {"n": "Osmania Biscuits", "t": "best"}, {"n": "Plum Cake", "t": "popular"}, {"n": "Whole Wheat Bread", "t": "healthy"}], "lastInspector": {"name": "A. Srinivas", "id": "FSSAI/TS/INS/2024/0045", "des": "FSO, Food Lab Hyderabad", "verdict": "pass", "date": "2026-01-02"}}, {"id": 6, "name": "Cream Stone Ice Creams", "area": "Banjara Hills", "cuisine": "Ice Cream & Desserts", "type": "Sweet Shop", "fssai": "10519022001007", "fs": "Valid", "insp": "2025-11-28", "score": 88, "adult": false, "chain": "Cream Stone", "owner": "Sujit Jain", "phone": "+91 98494 56789", "dishes": [{"n": "Brownie Blast", "t": "best"}, {"n": "Mango Tango", "t": "popular"}, {"n": "Fruit Sorbet", "t": "healthy"}], "lastInspector": {"name": "S. Malhotra", "id": "FSSAI/TS/INS/2024/0031", "des": "FSO, Hyderabad North", "verdict": "pass", "date": "2025-11-28"}}, {"id": 7, "name": "Open Box Cafe", "area": "Banjara Hills", "cuisine": "Cafe & Sandwiches", "type": "Restaurant", "fssai": "10519022001009", "fs": "Expired", "insp": "2025-07-10", "score": 67, "adult": false, "chain": null, "owner": "Arun Mehta", "phone": "+91 98495 67890", "dishes": [{"n": "Grilled Sandwich", "t": "best"}, {"n": "Cold Coffee", "t": "popular"}, {"n": "Fruit Bowl", "t": "healthy"}], "lastInspector": {"name": "K. Venkatesh Rao", "id": "FSSAI/TS/INS/2024/0018", "des": "FSO, Banjara Hills Zone", "verdict": "warn", "date": "2025-07-10"}}, {"id": 8, "name": "The Spice Room", "area": "Banjara Hills", "cuisine": "Pan Indian", "type": "Restaurant", "fssai": "10519022001010", "fs": "Valid", "insp": "2025-12-28", "score": 85, "adult": false, "chain": null, "owner": "Deepika Sharma", "phone": "+91 98496 78901", "dishes": [{"n": "Rogan Josh", "t": "best"}, {"n": "Steamed Basmati", "t": "healthy"}, {"n": "Paneer Tikka", "t": "popular"}, {"n": "Dal Tadka", "t": "healthy"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2025-12-28"}}, {"id": 9, "name": "Flechazo", "area": "Banjara Hills", "cuisine": "Continental & Italian", "type": "Restaurant", "fssai": "10519022001011", "fs": "Valid", "insp": "2025-12-10", "score": 82, "adult": false, "chain": null, "owner": "Carlo Rossi", "phone": "+91 98497 89012", "dishes": [{"n": "Pasta Arrabiata", "t": "best"}, {"n": "Caesar Salad", "t": "healthy"}, {"n": "Tiramisu", "t": "popular"}], "lastInspector": {"name": "K. Venkatesh Rao", "id": "FSSAI/TS/INS/2024/0018", "des": "FSO, Banjara Hills Zone", "verdict": "pass", "date": "2025-12-10"}}, {"id": 10, "name": "Banjara Street Bites", "area": "Banjara Hills", "cuisine": "Street Food", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 28, "adult": false, "chain": null, "owner": "Raju (no surname)", "phone": "+91 98498 90123", "dishes": [{"n": "Vada Pav", "t": "popular"}, {"n": "Pav Bhaji", "t": "popular"}], "lastInspector": null}, {"id": 11, "name": "Jewel of Nizam", "area": "Jubilee Hills", "cuisine": "Hyderabadi Royal Cuisine", "type": "Restaurant", "fssai": "10519022002001", "fs": "Valid", "insp": "2026-01-12", "score": 97, "adult": false, "chain": null, "owner": "Nawab Farrukh Ali", "phone": "+91 98499 01234", "dishes": [{"n": "Dum Biryani", "t": "best"}, {"n": "Shahi Haleem", "t": "best"}, {"n": "Shorba", "t": "healthy"}, {"n": "Phirni", "t": "popular"}, {"n": "Grilled Quail", "t": "best"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2026-01-12"}}, {"id": 12, "name": "Pista House Jubilee", "area": "Jubilee Hills", "cuisine": "Hyderabadi Sweets & Haleem", "type": "Sweet Shop", "fssai": "10519022002002", "fs": "Valid", "insp": "2025-12-28", "score": 93, "adult": false, "chain": "Pista House", "owner": "Nawab Mehboob Alam Khan", "phone": "+91 40 2360 0203", "dishes": [{"n": "Haleem", "t": "best"}, {"n": "Double Ka Meetha", "t": "best"}, {"n": "Qubani Ka Meetha", "t": "popular"}], "lastInspector": {"name": "A. Srinivas", "id": "FSSAI/TS/INS/2024/0045", "des": "FSO, Food Lab Hyderabad", "verdict": "pass", "date": "2025-12-28"}}, {"id": 13, "name": "Cafe Niloufer", "area": "Jubilee Hills", "cuisine": "Irani Chai & Snacks", "type": "Restaurant", "fssai": "10519022002003", "fs": "Valid", "insp": "2025-12-15", "score": 90, "adult": false, "chain": null, "owner": "Habib Irani", "phone": "+91 40 2331 0404", "dishes": [{"n": "Irani Chai", "t": "best"}, {"n": "Osmania Biscuit", "t": "best"}, {"n": "Bun Maska", "t": "popular"}, {"n": "Egg Bhurji", "t": "popular"}], "lastInspector": {"name": "K. Venkatesh Rao", "id": "FSSAI/TS/INS/2024/0018", "des": "FSO, Banjara Hills Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 14, "name": "Fusion 9", "area": "Jubilee Hills", "cuisine": "Multi-cuisine", "type": "Restaurant", "fssai": "10519022002004", "fs": "Valid", "insp": "2025-12-22", "score": 84, "adult": false, "chain": null, "owner": "Kiran Rao", "phone": "+91 98400 12345", "dishes": [{"n": "Thai Green Curry", "t": "best"}, {"n": "Grilled Salmon", "t": "healthy"}, {"n": "Chocolate Lava Cake", "t": "popular"}], "lastInspector": {"name": "S. Malhotra", "id": "FSSAI/TS/INS/2024/0031", "des": "FSO, Hyderabad North", "verdict": "pass", "date": "2025-12-22"}}, {"id": 15, "name": "Hotel Golkonda", "area": "Jubilee Hills", "cuisine": "Hyderabadi & Mughlai", "type": "Small Hotel", "fssai": "10519022002005", "fs": "Valid", "insp": "2025-11-20", "score": 88, "adult": false, "chain": null, "owner": "Sardar Hassan", "phone": "+91 40 2310 0505", "dishes": [{"n": "Mutton Biryani", "t": "best"}, {"n": "Chicken 65", "t": "popular"}, {"n": "Raita", "t": "healthy"}, {"n": "Haleem", "t": "best"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2025-11-20"}}, {"id": 16, "name": "Oh! Calcutta", "area": "Jubilee Hills", "cuisine": "Bengali & Seafood", "type": "Restaurant", "fssai": "10519022002006", "fs": "Valid", "insp": "2025-12-18", "score": 86, "adult": false, "chain": null, "owner": "Arnab Chatterjee", "phone": "+91 98401 23456", "dishes": [{"n": "Fish Koliwada", "t": "best"}, {"n": "Mustard Hilsa", "t": "best"}, {"n": "Steamed Fish", "t": "healthy"}, {"n": "Mishti Doi", "t": "popular"}], "lastInspector": {"name": "K. Venkatesh Rao", "id": "FSSAI/TS/INS/2024/0018", "des": "FSO, Banjara Hills Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 17, "name": "Zega Boulangerie", "area": "Jubilee Hills", "cuisine": "French Bakery", "type": "Bakery", "fssai": "10519022002007", "fs": "Expired", "insp": "2025-06-30", "score": 63, "adult": false, "chain": null, "owner": "Jean-Luc Dupont", "phone": "+91 98402 34567", "dishes": [{"n": "Croissant", "t": "best"}, {"n": "Sourdough Bread", "t": "healthy"}, {"n": "Macaron", "t": "popular"}], "lastInspector": {"name": "S. Malhotra", "id": "FSSAI/TS/INS/2024/0031", "des": "FSO, Hyderabad North", "verdict": "warn", "date": "2025-06-30"}}, {"id": 18, "name": "Green Bowl Jubilee", "area": "Jubilee Hills", "cuisine": "Salads & Health Food", "type": "Restaurant", "fssai": "10519022002008", "fs": "Valid", "insp": "2025-12-20", "score": 90, "adult": false, "chain": null, "owner": "Priya Menon", "phone": "+91 98403 45678", "dishes": [{"n": "Quinoa Buddha Bowl", "t": "healthy"}, {"n": "Avocado Toast", "t": "healthy"}, {"n": "Green Smoothie", "t": "healthy"}, {"n": "Grain Bowl", "t": "best"}], "lastInspector": {"name": "A. Srinivas", "id": "FSSAI/TS/INS/2024/0045", "des": "FSO, Food Lab Hyderabad", "verdict": "pass", "date": "2025-12-20"}}, {"id": 19, "name": "Jubilee Juice Bar", "area": "Jubilee Hills", "cuisine": "Juices & Smoothies", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 41, "adult": false, "chain": null, "owner": "Ramana", "phone": "+91 98404 56789", "dishes": [{"n": "Mixed Fruit Juice", "t": "healthy"}, {"n": "Sugarcane Juice", "t": "popular"}], "lastInspector": null}, {"id": 20, "name": "The Fisherman's Wharf", "area": "Hitech City", "cuisine": "Seafood & Coastal", "type": "Restaurant", "fssai": "10519022003002", "fs": "Valid", "insp": "2025-12-18", "score": 86, "adult": false, "chain": null, "owner": "Sebastian D'Souza", "phone": "+91 98405 67890", "dishes": [{"n": "Goan Fish Curry", "t": "best"}, {"n": "Steamed Pomfret", "t": "healthy"}, {"n": "Coconut Fish", "t": "healthy"}, {"n": "Prawn Biryani", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 21, "name": "Social Hitech City", "area": "Hitech City", "cuisine": "Cafe & Bar Food", "type": "Restaurant", "fssai": "10519022003003", "fs": "Valid", "insp": "2026-01-08", "score": 83, "adult": false, "chain": null, "owner": "Aditya Khanna", "phone": "+91 98406 78901", "dishes": [{"n": "Pulled Pork Slider", "t": "best"}, {"n": "Quinoa Bowl", "t": "healthy"}, {"n": "Nachos", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2026-01-08"}}, {"id": 22, "name": "Manohar Hotel Hitech", "area": "Hitech City", "cuisine": "Hyderabadi Biryani", "type": "Small Hotel", "fssai": "10519022003006", "fs": "Valid", "insp": "2025-12-20", "score": 85, "adult": false, "chain": "Manohar Group", "owner": "Manohar Reddy", "phone": "+91 40 2313 6600", "dishes": [{"n": "Chicken Biryani", "t": "best"}, {"n": "Mutton Biryani", "t": "best"}, {"n": "Raita", "t": "healthy"}, {"n": "Mirchi ka Salan", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 23, "name": "Chai Point Hitech", "area": "Hitech City", "cuisine": "Tea & Snacks", "type": "Restaurant", "fssai": "10519022003007", "fs": "Valid", "insp": "2025-11-30", "score": 81, "adult": false, "chain": "Chai Point", "owner": "Amuleek Singh Bijral", "phone": "+91 98407 89012", "dishes": [{"n": "Masala Chai", "t": "best"}, {"n": "Samosa", "t": "popular"}, {"n": "Poha", "t": "healthy"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-11-30"}}, {"id": 24, "name": "Smaaash Kitchen", "area": "Hitech City", "cuisine": "Multi-cuisine", "type": "Restaurant", "fssai": "10519022003001", "fs": "Valid", "insp": "2025-12-10", "score": 82, "adult": false, "chain": null, "owner": "Shripal Morakhia", "phone": "+91 98408 90123", "dishes": [{"n": "Loaded Fries", "t": "popular"}, {"n": "Grilled Burger", "t": "popular"}, {"n": "Fruit Salad", "t": "healthy"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-10"}}, {"id": 25, "name": "Eat Street Food Court", "area": "Hitech City", "cuisine": "Multi-cuisine Food Court", "type": "Restaurant", "fssai": "10519022003004", "fs": "Valid", "insp": "2025-11-25", "score": 78, "adult": false, "chain": null, "owner": "DLF Management", "phone": "+91 40 6730 8000", "dishes": [{"n": "Biryani", "t": "popular"}, {"n": "Veg Meal", "t": "healthy"}, {"n": "Dosa", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-11-25"}}, {"id": 26, "name": "Goli Vada Pav", "area": "Hitech City", "cuisine": "Mumbai Street Food", "type": "Street Food", "fssai": "10519022003005", "fs": "Valid", "insp": "2025-12-01", "score": 74, "adult": false, "chain": "Goli Vada Pav", "owner": "Venkatesh Iyer", "phone": "+91 98409 01234", "dishes": [{"n": "Vada Pav", "t": "best"}, {"n": "Samosa", "t": "popular"}, {"n": "Chai", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-01"}}, {"id": 27, "name": "Night Bites", "area": "Hitech City", "cuisine": "Street Food & Rolls", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 32, "adult": false, "chain": null, "owner": "Pappu Kumar", "phone": "+91 98410 12345", "dishes": [{"n": "Chicken Roll", "t": "popular"}, {"n": "Masala Fries", "t": "popular"}], "lastInspector": null}, {"id": 28, "name": "BigChef Hitech", "area": "Hitech City", "cuisine": "North Indian", "type": "Restaurant", "fssai": "10519022003008", "fs": "Valid", "insp": "2025-12-22", "score": 80, "adult": false, "chain": null, "owner": "Sandeep Gulati", "phone": "+91 98411 23456", "dishes": [{"n": "Butter Naan", "t": "popular"}, {"n": "Palak Paneer", "t": "healthy"}, {"n": "Dal Makhani", "t": "best"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 29, "name": "Kritunga Gachibowli", "area": "Gachibowli", "cuisine": "Rayalaseema Specials", "type": "Restaurant", "fssai": "10519022004001", "fs": "Valid", "insp": "2026-01-10", "score": 91, "adult": false, "chain": "Kritunga Group", "owner": "Nageswara Rao", "phone": "+91 98412 34567", "dishes": [{"n": "Natu Kodi Pulusu", "t": "best"}, {"n": "Ragi Sankati", "t": "healthy"}, {"n": "Pesarattu", "t": "healthy"}, {"n": "Natukodi Fry", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2026-01-10"}}, {"id": 30, "name": "Hyderabad House Biryani", "area": "Gachibowli", "cuisine": "Hyderabadi Biryani", "type": "Restaurant", "fssai": "10519022004004", "fs": "Valid", "insp": "2025-12-22", "score": 88, "adult": false, "chain": "Hyderabad House", "owner": "Razvi Brothers", "phone": "+91 98413 45678", "dishes": [{"n": "Chicken Dum Biryani", "t": "best"}, {"n": "Veg Biryani", "t": "healthy"}, {"n": "Mutton Biryani", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 31, "name": "Novotel Cafe", "area": "Gachibowli", "cuisine": "Continental Buffet", "type": "Restaurant", "fssai": "10519022004005", "fs": "Valid", "insp": "2026-01-05", "score": 93, "adult": false, "chain": null, "owner": "Accor Hotels", "phone": "+91 40 6624 7000", "dishes": [{"n": "Caesar Salad", "t": "healthy"}, {"n": "Grilled Salmon", "t": "best"}, {"n": "Pasta Primavera", "t": "healthy"}, {"n": "Chocolate Fondue", "t": "popular"}], "lastInspector": {"name": "Dr. Priya Sharma", "id": "FSSAI/TS/INS/2024/0012", "des": "Senior FSO, GHMC", "verdict": "pass", "date": "2026-01-05"}}, {"id": 32, "name": "Hotel Swagath", "area": "Gachibowli", "cuisine": "Seafood & Andhra", "type": "Small Hotel", "fssai": "10519022004003", "fs": "Valid", "insp": "2025-12-08", "score": 89, "adult": false, "chain": null, "owner": "Swaroop Reddy", "phone": "+91 98414 56789", "dishes": [{"n": "Royyala Iguru", "t": "best"}, {"n": "Andhra Fish Curry", "t": "best"}, {"n": "Steamed Rice", "t": "healthy"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-08"}}, {"id": 33, "name": "Rollacosta", "area": "Gachibowli", "cuisine": "Wraps & Rolls", "type": "Street Food", "fssai": "10519022004006", "fs": "Expired", "insp": "2025-08-10", "score": 61, "adult": false, "chain": null, "owner": "Rohan Kapoor", "phone": "+91 98415 67890", "dishes": [{"n": "Chicken Roll", "t": "popular"}, {"n": "Paneer Roll", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "warn", "date": "2025-08-10"}}, {"id": 34, "name": "Campus Mess 1", "area": "Gachibowli", "cuisine": "Andhra Home Food", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 45, "adult": false, "chain": null, "owner": "Yellaiah", "phone": "+91 98416 78901", "dishes": [{"n": "Rice & Sambar", "t": "popular"}, {"n": "Rasam", "t": "healthy"}], "lastInspector": null}, {"id": 35, "name": "Green Theory", "area": "Gachibowli", "cuisine": "Healthy & Organic", "type": "Restaurant", "fssai": "10519022004007", "fs": "Valid", "insp": "2025-12-28", "score": 87, "adult": false, "chain": null, "owner": "Niharika Joshi", "phone": "+91 98417 89012", "dishes": [{"n": "Acai Bowl", "t": "healthy"}, {"n": "Kale Smoothie", "t": "healthy"}, {"n": "Veggie Wrap", "t": "best"}, {"n": "Chia Pudding", "t": "healthy"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 36, "name": "Taste of India Gachibowli", "area": "Gachibowli", "cuisine": "Pan-Indian", "type": "Restaurant", "fssai": "10519022004002", "fs": "Valid", "insp": "2025-12-15", "score": 86, "adult": false, "chain": null, "owner": "Harish Kumar", "phone": "+91 98418 90123", "dishes": [{"n": "Butter Chicken", "t": "best"}, {"n": "Dal Tadka", "t": "healthy"}, {"n": "Tandoori Roti", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 37, "name": "Shah Ghouse Kukatpally", "area": "Kukatpally", "cuisine": "Hyderabadi Biryani & Haleem", "type": "Restaurant", "fssai": "10519022005001", "fs": "Valid", "insp": "2026-01-08", "score": 95, "adult": false, "chain": "Shah Ghouse", "owner": "Shah Ghouse Ahmed", "phone": "+91 40 2310 0707", "dishes": [{"n": "Mutton Biryani", "t": "best"}, {"n": "Haleem", "t": "best"}, {"n": "Mirchi ka Salan", "t": "popular"}, {"n": "Shorba", "t": "healthy"}], "lastInspector": {"name": "P. Narayana Reddy", "id": "FSSAI/TS/INS/2024/0074", "des": "FSO, KPHB Zone", "verdict": "pass", "date": "2026-01-08"}}, {"id": 38, "name": "Nagarjuna Kukatpally", "area": "Kukatpally", "cuisine": "Andhra Meals", "type": "Restaurant", "fssai": "10519022005002", "fs": "Valid", "insp": "2025-12-20", "score": 90, "adult": false, "chain": "Nagarjuna Group", "owner": "Nagarjuna Reddy", "phone": "+91 40 2310 0808", "dishes": [{"n": "Andhra Meals", "t": "best"}, {"n": "Gongura Mutton", "t": "best"}, {"n": "Pappu Charu", "t": "healthy"}, {"n": "Pesarattu", "t": "healthy"}], "lastInspector": {"name": "P. Narayana Reddy", "id": "FSSAI/TS/INS/2024/0074", "des": "FSO, KPHB Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 39, "name": "Pulla Reddy Sweets KPHB", "area": "Kukatpally", "cuisine": "Sweets & Snacks", "type": "Sweet Shop", "fssai": "10519022005003", "fs": "Valid", "insp": "2025-12-10", "score": 87, "adult": false, "chain": "Pulla Reddy", "owner": "Pulla Reddy Vari", "phone": "+91 40 2310 0909", "dishes": [{"n": "Kaju Katli", "t": "best"}, {"n": "Mysore Pak", "t": "best"}, {"n": "Dry Fruit Ladoo", "t": "popular"}], "lastInspector": {"name": "A. Srinivas", "id": "FSSAI/TS/INS/2024/0045", "des": "FSO, Food Lab Hyderabad", "verdict": "pass", "date": "2025-12-10"}}, {"id": 40, "name": "Subhan Bakery", "area": "Kukatpally", "cuisine": "Bakery & Irani Chai", "type": "Bakery", "fssai": "10519022005005", "fs": "Valid", "insp": "2025-12-28", "score": 86, "adult": false, "chain": null, "owner": "Mohammed Subhan", "phone": "+91 98419 01234", "dishes": [{"n": "Osmania Biscuits", "t": "best"}, {"n": "Irani Chai", "t": "best"}, {"n": "Bun Maska", "t": "popular"}, {"n": "Whole Wheat Loaf", "t": "healthy"}], "lastInspector": {"name": "P. Narayana Reddy", "id": "FSSAI/TS/INS/2024/0074", "des": "FSO, KPHB Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 41, "name": "Udipi Sri Krishna Bhavan", "area": "Kukatpally", "cuisine": "Udipi South Indian", "type": "Restaurant", "fssai": "10519022005004", "fs": "Valid", "insp": "2025-11-25", "score": 84, "adult": false, "chain": null, "owner": "Krishnaswamy Pai", "phone": "+91 98420 12345", "dishes": [{"n": "Masala Dosa", "t": "best"}, {"n": "Sambhar", "t": "healthy"}, {"n": "Rava Idli", "t": "healthy"}, {"n": "Filter Coffee", "t": "popular"}], "lastInspector": {"name": "P. Narayana Reddy", "id": "FSSAI/TS/INS/2024/0074", "des": "FSO, KPHB Zone", "verdict": "pass", "date": "2025-11-25"}}, {"id": 42, "name": "KPHB Biryani Corner", "area": "Kukatpally", "cuisine": "Hyderabadi Biryani", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 49, "adult": false, "chain": null, "owner": "Rizwan Ahmed", "phone": "+91 98421 23456", "dishes": [{"n": "Chicken Biryani", "t": "popular"}, {"n": "Egg Rice", "t": "popular"}], "lastInspector": null}, {"id": 43, "name": "Anand Tiffins", "area": "Kukatpally", "cuisine": "South Indian Tiffin", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 46, "adult": false, "chain": null, "owner": "Anand Rao", "phone": "+91 98422 34567", "dishes": [{"n": "Idli Sambar", "t": "healthy"}, {"n": "Vada", "t": "popular"}], "lastInspector": null}, {"id": 44, "name": "Spice Garden KPHB", "area": "Kukatpally", "cuisine": "North & South Indian", "type": "Small Hotel", "fssai": "10519022005006", "fs": "Valid", "insp": "2025-12-18", "score": 80, "adult": false, "chain": null, "owner": "Suresh Nair", "phone": "+91 98423 45678", "dishes": [{"n": "Chicken Biryani", "t": "best"}, {"n": "Veg Thali", "t": "healthy"}, {"n": "Gulab Jamun", "t": "popular"}], "lastInspector": {"name": "P. Narayana Reddy", "id": "FSSAI/TS/INS/2024/0074", "des": "FSO, KPHB Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 45, "name": "Bawarchi Restaurant", "area": "Ameerpet", "cuisine": "Hyderabadi & Mughlai", "type": "Restaurant", "fssai": "10519022006001", "fs": "Valid", "insp": "2025-12-18", "score": 92, "adult": false, "chain": null, "owner": "Abdul Sattar", "phone": "+91 40 2373 4251", "dishes": [{"n": "Mutton Biryani", "t": "best"}, {"n": "Chicken Dum Biryani", "t": "best"}, {"n": "Shami Kebab", "t": "popular"}, {"n": "Shorba", "t": "healthy"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 46, "name": "Hotel Shadab Ameerpet", "area": "Ameerpet", "cuisine": "Hyderabadi Biryani & Haleem", "type": "Small Hotel", "fssai": "10519022006002", "fs": "Valid", "insp": "2026-01-06", "score": 90, "adult": false, "chain": "Hotel Shadab", "owner": "Shadab Khan", "phone": "+91 40 2455 0550", "dishes": [{"n": "Biryani", "t": "best"}, {"n": "Haleem", "t": "best"}, {"n": "Raita", "t": "healthy"}, {"n": "Nahari", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2026-01-06"}}, {"id": 47, "name": "MTR Restaurant", "area": "Ameerpet", "cuisine": "South Indian", "type": "Restaurant", "fssai": "10519022006004", "fs": "Valid", "insp": "2025-12-12", "score": 91, "adult": false, "chain": "MTR", "owner": "MTR Foods Pvt Ltd", "phone": "+91 40 2373 0099", "dishes": [{"n": "Masala Dosa", "t": "best"}, {"n": "Rava Idli", "t": "healthy"}, {"n": "Upma", "t": "healthy"}, {"n": "Filter Coffee", "t": "best"}, {"n": "Kesari Bath", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-12"}}, {"id": 48, "name": "Taj Mahal Hotel Ameerpet", "area": "Ameerpet", "cuisine": "Andhra & North Indian", "type": "Small Hotel", "fssai": "10519022006003", "fs": "Valid", "insp": "2025-11-15", "score": 83, "adult": false, "chain": null, "owner": "Mohammed Taj", "phone": "+91 98424 56789", "dishes": [{"n": "Biryani", "t": "best"}, {"n": "Naan & Curry", "t": "popular"}, {"n": "Sambar Rice", "t": "healthy"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-11-15"}}, {"id": 49, "name": "Prasad Tiffin Centre", "area": "Ameerpet", "cuisine": "South Indian Tiffin", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 52, "adult": false, "chain": null, "owner": "Prasad Varma", "phone": "+91 98425 67890", "dishes": [{"n": "Idli Sambar", "t": "popular"}, {"n": "Poha", "t": "healthy"}], "lastInspector": null}, {"id": 50, "name": "Egg Factory Ameerpet", "area": "Ameerpet", "cuisine": "Egg & Fast Food", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 34, "adult": false, "chain": null, "owner": "Ravi Kiran", "phone": "+91 98426 78901", "dishes": [{"n": "Egg Biryani", "t": "popular"}, {"n": "Omelette", "t": "popular"}], "lastInspector": null}, {"id": 51, "name": "Udipi Palace Ameerpet", "area": "Ameerpet", "cuisine": "South Indian", "type": "Restaurant", "fssai": "10519022006005", "fs": "Valid", "insp": "2025-12-20", "score": 82, "adult": false, "chain": null, "owner": "Shetty Brothers", "phone": "+91 98427 89012", "dishes": [{"n": "Dosa", "t": "best"}, {"n": "Rasam", "t": "healthy"}, {"n": "Coconut Chutney", "t": "healthy"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 52, "name": "Paradise Secunderabad", "area": "Secunderabad", "cuisine": "Hyderabadi Biryani", "type": "Restaurant", "fssai": "10519022007002", "fs": "Valid", "insp": "2026-01-04", "score": 94, "adult": false, "chain": "Paradise Group", "owner": "Subhani Brothers", "phone": "+91 40 2784 6666", "dishes": [{"n": "Mutton Biryani", "t": "best"}, {"n": "Chicken Biryani", "t": "best"}, {"n": "Raita", "t": "healthy"}, {"n": "Mirchi ka Salan", "t": "popular"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "pass", "date": "2026-01-04"}}, {"id": 53, "name": "Hotel Jaya International", "area": "Secunderabad", "cuisine": "South Indian & Continental", "type": "Small Hotel", "fssai": "10519022007001", "fs": "Valid", "insp": "2025-12-20", "score": 85, "adult": false, "chain": null, "owner": "Jayaram Pillai", "phone": "+91 40 2770 1234", "dishes": [{"n": "Appam & Stew", "t": "healthy"}, {"n": "Biryani", "t": "popular"}, {"n": "Veg Thali", "t": "healthy"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "pass", "date": "2025-12-20"}}, {"id": 54, "name": "Deccan Bakeries", "area": "Secunderabad", "cuisine": "Bakery & Confectionery", "type": "Bakery", "fssai": "10519022007004", "fs": "Valid", "insp": "2025-12-30", "score": 88, "adult": false, "chain": null, "owner": "Deccan Foods Ltd", "phone": "+91 40 2780 5678", "dishes": [{"n": "Multigrain Bread", "t": "healthy"}, {"n": "Plum Cake", "t": "best"}, {"n": "Cream Puffs", "t": "popular"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "pass", "date": "2025-12-30"}}, {"id": 55, "name": "Irani Cafe MJ Market", "area": "Secunderabad", "cuisine": "Irani Chai & Bun Maska", "type": "Restaurant", "fssai": "10519022007005", "fs": "Expired", "insp": "2025-05-20", "score": 65, "adult": false, "chain": null, "owner": "Dara Irani", "phone": "+91 40 2770 9012", "dishes": [{"n": "Irani Chai", "t": "best"}, {"n": "Bun Maska", "t": "best"}, {"n": "Akuri Eggs", "t": "popular"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "warn", "date": "2025-05-20"}}, {"id": 56, "name": "Sanman Hotel", "area": "Secunderabad", "cuisine": "South Indian Meals", "type": "Small Hotel", "fssai": "10519022007003", "fs": "Valid", "insp": "2025-12-08", "score": 82, "adult": false, "chain": null, "owner": "Sanman Shetty", "phone": "+91 40 2780 3456", "dishes": [{"n": "South Indian Thali", "t": "best"}, {"n": "Sambar Rice", "t": "healthy"}, {"n": "Filter Coffee", "t": "popular"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "pass", "date": "2025-12-08"}}, {"id": 57, "name": "Biryani Story SC", "area": "Secunderabad", "cuisine": "Biryani & Kebabs", "type": "Restaurant", "fssai": "10519022007006", "fs": "Valid", "insp": "2025-12-15", "score": 80, "adult": false, "chain": null, "owner": "Faisal Khan", "phone": "+91 98428 90123", "dishes": [{"n": "Chicken Biryani", "t": "best"}, {"n": "Seekh Kebab", "t": "popular"}, {"n": "Raita", "t": "healthy"}], "lastInspector": {"name": "V. Sunder Rajan", "id": "FSSAI/TS/INS/2024/0091", "des": "Senior FSO, Secunderabad", "verdict": "pass", "date": "2025-12-15"}}, {"id": 58, "name": "Rasool's Paratha House", "area": "Secunderabad", "cuisine": "North Indian Parathas", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 41, "adult": false, "chain": null, "owner": "Rasool Bhai", "phone": "+91 98429 01234", "dishes": [{"n": "Aloo Paratha", "t": "popular"}, {"n": "Egg Paratha", "t": "popular"}], "lastInspector": null}, {"id": 59, "name": "Nimrah Cafe", "area": "Charminar", "cuisine": "Irani Chai & Osmania Biscuit", "type": "Restaurant", "fssai": "10519022009001", "fs": "Valid", "insp": "2025-12-10", "score": 89, "adult": false, "chain": null, "owner": "Nimrah Hassan", "phone": "+91 40 2452 4444", "dishes": [{"n": "Irani Chai", "t": "best"}, {"n": "Osmania Biscuit", "t": "best"}, {"n": "Bun Maska", "t": "popular"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "pass", "date": "2025-12-10"}}, {"id": 60, "name": "Hotel Shadab Old City", "area": "Charminar", "cuisine": "Hyderabadi Biryani", "type": "Restaurant", "fssai": "10519022009002", "fs": "Valid", "insp": "2025-12-25", "score": 93, "adult": false, "chain": "Hotel Shadab", "owner": "Shadab Khan", "phone": "+91 40 2453 5555", "dishes": [{"n": "Mutton Biryani", "t": "best"}, {"n": "Haleem", "t": "best"}, {"n": "Paya", "t": "popular"}, {"n": "Nihari", "t": "popular"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "pass", "date": "2025-12-25"}}, {"id": 61, "name": "Sarvi Restaurant", "area": "Charminar", "cuisine": "Hyderabadi Biryani & Kebabs", "type": "Restaurant", "fssai": "10519022009003", "fs": "Valid", "insp": "2025-12-01", "score": 87, "adult": false, "chain": null, "owner": "Sarvi Ahmed", "phone": "+91 40 2454 6666", "dishes": [{"n": "Dum Biryani", "t": "best"}, {"n": "Seekh Kebab", "t": "popular"}, {"n": "Shorba", "t": "healthy"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "pass", "date": "2025-12-01"}}, {"id": 62, "name": "Hotel Al-Noor", "area": "Charminar", "cuisine": "Andhra & Mughlai", "type": "Small Hotel", "fssai": "10519022009004", "fs": "Valid", "insp": "2026-01-03", "score": 84, "adult": false, "chain": null, "owner": "Noor Mohammed", "phone": "+91 98430 12345", "dishes": [{"n": "Biryani", "t": "popular"}, {"n": "Haleem", "t": "best"}, {"n": "Dal", "t": "healthy"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "pass", "date": "2026-01-03"}}, {"id": 63, "name": "Lucky Restaurant", "area": "Charminar", "cuisine": "Biryani & Kebabs", "type": "Restaurant", "fssai": "10519022009005", "fs": "Expired", "insp": "2025-09-12", "score": 70, "adult": false, "chain": null, "owner": "Lucky Bhai", "phone": "+91 98431 23456", "dishes": [{"n": "Chicken Biryani", "t": "popular"}, {"n": "Seekh Kebab", "t": "best"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "warn", "date": "2025-09-12"}}, {"id": 64, "name": "Laad Bazaar Sweets", "area": "Charminar", "cuisine": "Hyderabadi Sweets", "type": "Sweet Shop", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 44, "adult": false, "chain": null, "owner": "Laad Bhai", "phone": "+91 98432 34567", "dishes": [{"n": "Qubani Ka Meetha", "t": "popular"}, {"n": "Khubani Halwa", "t": "best"}], "lastInspector": null}, {"id": 65, "name": "Pista House Charminar", "area": "Charminar", "cuisine": "Hyderabadi Haleem & Sweets", "type": "Sweet Shop", "fssai": "10519022009006", "fs": "Valid", "insp": "2025-12-20", "score": 91, "adult": false, "chain": "Pista House", "owner": "Nawab Mehboob Alam Khan", "phone": "+91 40 2452 3333", "dishes": [{"n": "Haleem", "t": "best"}, {"n": "Double Ka Meetha", "t": "best"}, {"n": "Sheer Khurma", "t": "popular"}], "lastInspector": {"name": "H. Mohammed Farooq", "id": "FSSAI/TS/INS/2024/0102", "des": "FSO, Old City Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 66, "name": "Old City Chai Stall", "area": "Charminar", "cuisine": "Tea & Snacks", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 29, "adult": false, "chain": null, "owner": "Chand Bhai", "phone": "+91 98433 45678", "dishes": [{"n": "Kadak Chai", "t": "popular"}, {"n": "Bun Omelette", "t": "popular"}], "lastInspector": null}, {"id": 67, "name": "Hotel Sitara Grand Abids", "area": "Abids", "cuisine": "Multi-cuisine", "type": "Small Hotel", "fssai": "10519022010001", "fs": "Valid", "insp": "2025-12-18", "score": 84, "adult": false, "chain": null, "owner": "Sitaramarao", "phone": "+91 40 2323 1234", "dishes": [{"n": "Biryani", "t": "popular"}, {"n": "Veg Thali", "t": "healthy"}, {"n": "Paneer Butter Masala", "t": "best"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 68, "name": "Domino's Abids", "area": "Abids", "cuisine": "Pizza & Fast Food", "type": "Restaurant", "fssai": "10519022010002", "fs": "Valid", "insp": "2025-12-28", "score": 87, "adult": false, "chain": "Domino's", "owner": "Jubilant FoodWorks", "phone": "+91 1800 208 1234", "dishes": [{"n": "Pepperoni Pizza", "t": "popular"}, {"n": "Veg Supreme", "t": "popular"}, {"n": "Pasta", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 69, "name": "Akbar Hotel Abids", "area": "Abids", "cuisine": "North Indian", "type": "Small Hotel", "fssai": "10519022010003", "fs": "Expired", "insp": "2025-04-10", "score": 55, "adult": false, "chain": null, "owner": "Akbar Khan", "phone": "+91 40 2320 5678", "dishes": [{"n": "Naan & Curry", "t": "popular"}, {"n": "Tandoori Roti", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "warn", "date": "2025-04-10"}}, {"id": 70, "name": "Sarovar Bakery", "area": "Abids", "cuisine": "Bakery & Pastries", "type": "Bakery", "fssai": "10519022010004", "fs": "Valid", "insp": "2025-12-20", "score": 83, "adult": false, "chain": null, "owner": "Sarovar Sweets", "phone": "+91 40 2321 9012", "dishes": [{"n": "Black Forest Cake", "t": "popular"}, {"n": "Multigrain Bread", "t": "healthy"}, {"n": "Cream Roll", "t": "best"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 71, "name": "Sri Venkateswara Hotel", "area": "Abids", "cuisine": "Andhra Meals", "type": "Small Hotel", "fssai": "10519022010005", "fs": "Valid", "insp": "2025-12-10", "score": 79, "adult": false, "chain": null, "owner": "Venkateswara Rao", "phone": "+91 98434 56789", "dishes": [{"n": "Andhra Meals", "t": "best"}, {"n": "Rasam Rice", "t": "healthy"}, {"n": "Curd Rice", "t": "healthy"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-10"}}, {"id": 72, "name": "Noodle Bar Abids", "area": "Abids", "cuisine": "Asian & Chinese", "type": "Restaurant", "fssai": "10519022010006", "fs": "Valid", "insp": "2025-12-15", "score": 77, "adult": false, "chain": null, "owner": "Wang Lin", "phone": "+91 98435 67890", "dishes": [{"n": "Hakka Noodles", "t": "popular"}, {"n": "Steamed Dumplings", "t": "healthy"}, {"n": "Fried Rice", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 73, "name": "Abids Street Stall", "area": "Abids", "cuisine": "Street Food", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 26, "adult": false, "chain": null, "owner": "Srinivas", "phone": "+91 98436 78901", "dishes": [{"n": "Pani Puri", "t": "popular"}, {"n": "Bhel Puri", "t": "popular"}], "lastInspector": null}, {"id": 74, "name": "Sri Venkateshwara Tiffins", "area": "LB Nagar", "cuisine": "South Indian Tiffin", "type": "Restaurant", "fssai": "10519022011002", "fs": "Valid", "insp": "2025-12-15", "score": 81, "adult": false, "chain": null, "owner": "Venkatesh Sharma", "phone": "+91 98437 89012", "dishes": [{"n": "Idli Sambar", "t": "healthy"}, {"n": "Medu Vada", "t": "popular"}, {"n": "Rava Dosa", "t": "best"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 75, "name": "Hotel Sai Krupa", "area": "LB Nagar", "cuisine": "Andhra Meals", "type": "Small Hotel", "fssai": "10519022011001", "fs": "Valid", "insp": "2025-11-28", "score": 79, "adult": false, "chain": null, "owner": "Sai Baba Rao", "phone": "+91 40 2417 1234", "dishes": [{"n": "Andhra Thali", "t": "best"}, {"n": "Rasam", "t": "healthy"}, {"n": "Veg Curry", "t": "popular"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-11-28"}}, {"id": 76, "name": "Biryani Zone LB Nagar", "area": "LB Nagar", "cuisine": "Biryani", "type": "Restaurant", "fssai": "10519022011003", "fs": "Valid", "insp": "2025-12-22", "score": 76, "adult": false, "chain": null, "owner": "Aslam Khan", "phone": "+91 98438 90123", "dishes": [{"n": "Chicken Biryani", "t": "best"}, {"n": "Mutton Biryani", "t": "popular"}, {"n": "Raita", "t": "healthy"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 77, "name": "Student Bhojanshala", "area": "LB Nagar", "cuisine": "Andhra Home Food", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 43, "adult": false, "chain": null, "owner": "Bhavani Shankar", "phone": "+91 98439 01234", "dishes": [{"n": "Rice & Dal", "t": "healthy"}, {"n": "Sambar Rice", "t": "popular"}], "lastInspector": null}, {"id": 78, "name": "Spice Junction LB", "area": "LB Nagar", "cuisine": "Multi-cuisine", "type": "Restaurant", "fssai": "10519022011004", "fs": "Valid", "insp": "2025-12-18", "score": 78, "adult": false, "chain": null, "owner": "Ravindra Kumar", "phone": "+91 98440 12345", "dishes": [{"n": "Grilled Chicken", "t": "best"}, {"n": "Dal Fry", "t": "healthy"}, {"n": "Naan", "t": "popular"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 79, "name": "RTC X Roads Chaat", "area": "LB Nagar", "cuisine": "Chaat & Street Food", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 31, "adult": false, "chain": null, "owner": "Ramesh", "phone": "+91 98441 23456", "dishes": [{"n": "Pani Puri", "t": "popular"}, {"n": "Dahi Puri", "t": "popular"}], "lastInspector": null}, {"id": 80, "name": "Hotel Residency LB", "area": "LB Nagar", "cuisine": "North & South Indian", "type": "Small Hotel", "fssai": "10519022011005", "fs": "Valid", "insp": "2025-11-20", "score": 74, "adult": false, "chain": null, "owner": "Suresh Babu Goud", "phone": "+91 40 2417 5678", "dishes": [{"n": "Biryani", "t": "popular"}, {"n": "Butter Roti", "t": "popular"}, {"n": "Veg Curry", "t": "healthy"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-11-20"}}, {"id": 81, "name": "Annapoorna Restaurant", "area": "Dilsukhnagar", "cuisine": "Andhra Meals", "type": "Restaurant", "fssai": "10519022012002", "fs": "Valid", "insp": "2025-11-22", "score": 86, "adult": false, "chain": null, "owner": "Annapoorna Devi", "phone": "+91 98442 34567", "dishes": [{"n": "Andhra Thali", "t": "best"}, {"n": "Gongura Pachadi", "t": "best"}, {"n": "Sambar", "t": "healthy"}, {"n": "Butter Milk", "t": "healthy"}], "lastInspector": {"name": "G. Padmavathi", "id": "FSSAI/TS/INS/2024/0136", "des": "FSO, Dilsukhnagar Zone", "verdict": "pass", "date": "2025-11-22"}}, {"id": 82, "name": "Cakes & Bakes", "area": "Dilsukhnagar", "cuisine": "Bakery & Cakes", "type": "Bakery", "fssai": "10519022012003", "fs": "Valid", "insp": "2025-12-28", "score": 84, "adult": false, "chain": null, "owner": "Rekha Sharma", "phone": "+91 98443 45678", "dishes": [{"n": "Black Forest Cake", "t": "best"}, {"n": "Multigrain Bread", "t": "healthy"}, {"n": "Croissant", "t": "popular"}], "lastInspector": {"name": "G. Padmavathi", "id": "FSSAI/TS/INS/2024/0136", "des": "FSO, Dilsukhnagar Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 83, "name": "Hotel Viceroy", "area": "Dilsukhnagar", "cuisine": "South Indian & Mughlai", "type": "Small Hotel", "fssai": "10519022012001", "fs": "Valid", "insp": "2025-12-10", "score": 82, "adult": false, "chain": null, "owner": "Viceroy Reddy", "phone": "+91 40 2420 9012", "dishes": [{"n": "Chicken Biryani", "t": "popular"}, {"n": "Veg Thali", "t": "healthy"}, {"n": "Butter Naan", "t": "popular"}], "lastInspector": {"name": "G. Padmavathi", "id": "FSSAI/TS/INS/2024/0136", "des": "FSO, Dilsukhnagar Zone", "verdict": "pass", "date": "2025-12-10"}}, {"id": 84, "name": "Hyderabadi Kitchen", "area": "Dilsukhnagar", "cuisine": "Hyderabadi Specials", "type": "Restaurant", "fssai": "10519022012004", "fs": "Valid", "insp": "2025-12-20", "score": 80, "adult": false, "chain": null, "owner": "Nawab Hussain", "phone": "+91 98444 56789", "dishes": [{"n": "Haleem", "t": "best"}, {"n": "Biryani", "t": "popular"}, {"n": "Shorba", "t": "healthy"}], "lastInspector": {"name": "G. Padmavathi", "id": "FSSAI/TS/INS/2024/0136", "des": "FSO, Dilsukhnagar Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 85, "name": "Dilsukhnagar Biryani", "area": "Dilsukhnagar", "cuisine": "Biryani", "type": "Restaurant", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 51, "adult": false, "chain": null, "owner": "Salim Khan", "phone": "+91 98445 67890", "dishes": [{"n": "Chicken Biryani", "t": "popular"}, {"n": "Mutton Biryani", "t": "popular"}], "lastInspector": null}, {"id": 86, "name": "Pakka Hyderabadi Mess", "area": "Dilsukhnagar", "cuisine": "Andhra Home Food", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 38, "adult": false, "chain": null, "owner": "Lakshmi Narayana", "phone": "+91 98446 78901", "dishes": [{"n": "Rice & Curry", "t": "popular"}, {"n": "Curd Rice", "t": "healthy"}], "lastInspector": null}, {"id": 87, "name": "South Indian Cafe DSN", "area": "Dilsukhnagar", "cuisine": "South Indian", "type": "Restaurant", "fssai": "10519022012005", "fs": "Valid", "insp": "2025-12-15", "score": 78, "adult": false, "chain": null, "owner": "Gopalan Nair", "phone": "+91 98447 89012", "dishes": [{"n": "Kerala Meals", "t": "best"}, {"n": "Fish Curry", "t": "best"}, {"n": "Appam", "t": "healthy"}], "lastInspector": {"name": "G. Padmavathi", "id": "FSSAI/TS/INS/2024/0136", "des": "FSO, Dilsukhnagar Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 88, "name": "Minerva Coffee Shop", "area": "Uppal", "cuisine": "South Indian Coffee & Tiffin", "type": "Restaurant", "fssai": "10519022013002", "fs": "Valid", "insp": "2025-12-18", "score": 81, "adult": false, "chain": null, "owner": "Minerva Shetty", "phone": "+91 98448 90123", "dishes": [{"n": "Filter Coffee", "t": "best"}, {"n": "Masala Dosa", "t": "popular"}, {"n": "Idli", "t": "healthy"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-18"}}, {"id": 89, "name": "Hotel Sri Lakshmi", "area": "Uppal", "cuisine": "Andhra & South Indian", "type": "Small Hotel", "fssai": "10519022013001", "fs": "Valid", "insp": "2025-12-05", "score": 78, "adult": false, "chain": null, "owner": "Sri Lakshmi Devi", "phone": "+91 40 2420 1234", "dishes": [{"n": "Andhra Thali", "t": "best"}, {"n": "Rasam", "t": "healthy"}, {"n": "Sambar Rice", "t": "popular"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-05"}}, {"id": 90, "name": "Uppal Biryani Point", "area": "Uppal", "cuisine": "Biryani", "type": "Restaurant", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 47, "adult": false, "chain": null, "owner": "Imran Bhai", "phone": "+91 98449 01234", "dishes": [{"n": "Chicken Biryani", "t": "popular"}, {"n": "Mutton Biryani", "t": "popular"}], "lastInspector": null}, {"id": 91, "name": "Ramaiah Mess", "area": "Uppal", "cuisine": "Andhra Home Food", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 40, "adult": false, "chain": null, "owner": "Ramaiah", "phone": "+91 98450 12345", "dishes": [{"n": "Rice & Dal", "t": "healthy"}, {"n": "Sambar", "t": "popular"}], "lastInspector": null}, {"id": 92, "name": "Sunrise Hotel Uppal", "area": "Uppal", "cuisine": "North & South Indian", "type": "Small Hotel", "fssai": "10519022013003", "fs": "Valid", "insp": "2025-12-22", "score": 75, "adult": false, "chain": null, "owner": "Sundar Raj", "phone": "+91 98451 23456", "dishes": [{"n": "Biryani", "t": "popular"}, {"n": "Veg Thali", "t": "healthy"}, {"n": "Butter Chicken", "t": "best"}], "lastInspector": {"name": "C. Sumalatha", "id": "FSSAI/TS/INS/2024/0128", "des": "FSO, LB Nagar Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 93, "name": "Tiffin Junction Uppal", "area": "Uppal", "cuisine": "South Indian Tiffin", "type": "Student Mess", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 44, "adult": false, "chain": null, "owner": "Tiffin Raju", "phone": "+91 98452 34567", "dishes": [{"n": "Idli", "t": "healthy"}, {"n": "Poha", "t": "healthy"}], "lastInspector": null}, {"id": 94, "name": "Ohri's Banjara Kondapur", "area": "Kondapur", "cuisine": "Continental & Indian", "type": "Restaurant", "fssai": "10519022014002", "fs": "Valid", "insp": "2026-01-06", "score": 88, "adult": false, "chain": "Ohri's Group", "owner": "Srinivas Ohri", "phone": "+91 98453 45678", "dishes": [{"n": "Chicken Grill", "t": "best"}, {"n": "Garden Salad", "t": "healthy"}, {"n": "Pasta", "t": "popular"}, {"n": "Tiramisu", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2026-01-06"}}, {"id": 95, "name": "Kondapur Darshini", "area": "Kondapur", "cuisine": "South Indian Tiffin", "type": "Restaurant", "fssai": "10519022014004", "fs": "Valid", "insp": "2025-11-30", "score": 80, "adult": false, "chain": null, "owner": "Darshini Gowda", "phone": "+91 98454 56789", "dishes": [{"n": "Set Dosa", "t": "best"}, {"n": "Plain Dosa", "t": "healthy"}, {"n": "Vada", "t": "popular"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-11-30"}}, {"id": 96, "name": "Spice Route Kondapur", "area": "Kondapur", "cuisine": "Pan-Asian", "type": "Restaurant", "fssai": "10519022014001", "fs": "Valid", "insp": "2025-12-22", "score": 85, "adult": false, "chain": null, "owner": "Lee Wei", "phone": "+91 98455 67890", "dishes": [{"n": "Thai Green Curry", "t": "best"}, {"n": "Steamed Dimsums", "t": "healthy"}, {"n": "Pad Thai", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 97, "name": "Tech Park Canteen", "area": "Kondapur", "cuisine": "Multi-cuisine Canteen", "type": "Student Mess", "fssai": "10519022014005", "fs": "Valid", "insp": "2025-12-15", "score": 77, "adult": false, "chain": null, "owner": "Canteen Mgmt", "phone": "+91 40 6730 7777", "dishes": [{"n": "Veg Meal", "t": "healthy"}, {"n": "Fruit Bowl", "t": "healthy"}, {"n": "Chicken Rice", "t": "popular"}], "lastInspector": {"name": "M. Suresh Babu", "id": "FSSAI/TS/INS/2024/0062", "des": "Senior FSO, Gachibowli Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 98, "name": "Lemon Tree Cafe", "area": "Kondapur", "cuisine": "Cafe & Sandwiches", "type": "Restaurant", "fssai": "10519022014003", "fs": "Valid", "insp": "2025-12-12", "score": 83, "adult": false, "chain": null, "owner": "Sameera Jain", "phone": "+91 98456 78901", "dishes": [{"n": "Grilled Sandwich", "t": "best"}, {"n": "Cold Coffee", "t": "popular"}, {"n": "Smoothie Bowl", "t": "healthy"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-12"}}, {"id": 99, "name": "The Bowl Company", "area": "Kondapur", "cuisine": "Healthy Bowls", "type": "Restaurant", "fssai": "10519022014006", "fs": "Valid", "insp": "2025-12-28", "score": 86, "adult": false, "chain": null, "owner": "Neeha Reddy", "phone": "+91 98457 89012", "dishes": [{"n": "Protein Bowl", "t": "healthy"}, {"n": "Veggie Bowl", "t": "healthy"}, {"n": "Brown Rice Bowl", "t": "best"}], "lastInspector": {"name": "R. Krishnamurthy", "id": "FSSAI/TS/INS/2024/0057", "des": "FSO, Madhapur Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 100, "name": "Rolls and Wraps", "area": "Kondapur", "cuisine": "Rolls & Fast Food", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 33, "adult": false, "chain": null, "owner": "Pappu Wrap", "phone": "+91 98458 90123", "dishes": [{"n": "Chicken Frankie", "t": "popular"}, {"n": "Paneer Roll", "t": "popular"}], "lastInspector": null}, {"id": 101, "name": "Prasads IMAX Cafe", "area": "Himayatnagar", "cuisine": "Snacks & Fast Food", "type": "Restaurant", "fssai": "10519022015002", "fs": "Valid", "insp": "2025-12-28", "score": 79, "adult": false, "chain": null, "owner": "Prasad Group", "phone": "+91 40 2335 9999", "dishes": [{"n": "Nachos", "t": "popular"}, {"n": "Popcorn Chicken", "t": "popular"}, {"n": "Fruit Salad", "t": "healthy"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 102, "name": "New Shanti Hotel", "area": "Himayatnagar", "cuisine": "Andhra Meals", "type": "Small Hotel", "fssai": "10519022015003", "fs": "Expired", "insp": "2025-08-22", "score": 61, "adult": false, "chain": null, "owner": "Shanti Lal", "phone": "+91 40 2335 8888", "dishes": [{"n": "Meals", "t": "popular"}, {"n": "Curd Rice", "t": "healthy"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "warn", "date": "2025-08-22"}}, {"id": 103, "name": "Roaster's Cup", "area": "Himayatnagar", "cuisine": "Specialty Coffee & Cafe", "type": "Restaurant", "fssai": "10519022015001", "fs": "Valid", "insp": "2025-12-20", "score": 82, "adult": false, "chain": null, "owner": "Arjun Kapoor", "phone": "+91 98459 01234", "dishes": [{"n": "Cold Brew Coffee", "t": "best"}, {"n": "Avocado Toast", "t": "healthy"}, {"n": "Croissant", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 104, "name": "Hotel Surya Himayat", "area": "Himayatnagar", "cuisine": "South & North Indian", "type": "Small Hotel", "fssai": "10519022015004", "fs": "Valid", "insp": "2025-12-15", "score": 76, "adult": false, "chain": null, "owner": "Surya Narayana", "phone": "+91 40 2335 7777", "dishes": [{"n": "Andhra Thali", "t": "best"}, {"n": "Veg Curry", "t": "healthy"}, {"n": "Naan", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 105, "name": "Street Kebab Corner", "area": "Himayatnagar", "cuisine": "Kebabs & Tikkas", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 28, "adult": false, "chain": null, "owner": "Shabbir Bhai", "phone": "+91 98460 12345", "dishes": [{"n": "Seekh Kebab", "t": "popular"}, {"n": "Chicken Tikka", "t": "popular"}], "lastInspector": null}, {"id": 106, "name": "Cake Walk Himayat", "area": "Himayatnagar", "cuisine": "Bakery & Desserts", "type": "Bakery", "fssai": "10519022015005", "fs": "Valid", "insp": "2025-12-22", "score": 85, "adult": false, "chain": null, "owner": "Swati Bhatia", "phone": "+91 98461 23456", "dishes": [{"n": "Chocolate Cake", "t": "best"}, {"n": "Fruit Tart", "t": "healthy"}, {"n": "Cheesecake", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-22"}}, {"id": 107, "name": "Noodle Street Himayat", "area": "Himayatnagar", "cuisine": "Chinese & Asian", "type": "Restaurant", "fssai": "10519022015006", "fs": "Valid", "insp": "2025-12-08", "score": 74, "adult": false, "chain": null, "owner": "Chen Brothers", "phone": "+91 98462 34567", "dishes": [{"n": "Chow Mein", "t": "popular"}, {"n": "Steamed Dumplings", "t": "healthy"}, {"n": "Manchurian", "t": "popular"}], "lastInspector": {"name": "B. Ramakrishna", "id": "FSSAI/TS/INS/2024/0115", "des": "FSO, Abids Zone", "verdict": "pass", "date": "2025-12-08"}}, {"id": 108, "name": "Waterfront Restaurant", "area": "Begumpet", "cuisine": "Seafood & Continental", "type": "Restaurant", "fssai": "10519022008001", "fs": "Valid", "insp": "2025-12-15", "score": 88, "adult": false, "chain": null, "owner": "Sebastian D'Souza", "phone": "+91 40 2340 1234", "dishes": [{"n": "Grilled Fish", "t": "healthy"}, {"n": "Lobster Thermidor", "t": "best"}, {"n": "Prawn Cocktail", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-15"}}, {"id": 109, "name": "Berry's Restaurant", "area": "Begumpet", "cuisine": "Continental & Mughlai", "type": "Restaurant", "fssai": "10519022008004", "fs": "Valid", "insp": "2026-01-08", "score": 86, "adult": false, "chain": null, "owner": "Berry Fernandes", "phone": "+91 40 2340 5678", "dishes": [{"n": "Chicken Cordon Bleu", "t": "best"}, {"n": "Mushroom Soup", "t": "healthy"}, {"n": "Creme Brulee", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2026-01-08"}}, {"id": 110, "name": "Kamat Hotel Begumpet", "area": "Begumpet", "cuisine": "South Indian Meals", "type": "Small Hotel", "fssai": "10519022008003", "fs": "Expired", "insp": "2025-07-18", "score": 62, "adult": false, "chain": null, "owner": "Kamat Shetty", "phone": "+91 40 2340 9012", "dishes": [{"n": "South Indian Thali", "t": "popular"}, {"n": "Sambar Rice", "t": "healthy"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "warn", "date": "2025-07-18"}}, {"id": 111, "name": "Barbeque Hut Begumpet", "area": "Begumpet", "cuisine": "BBQ & Grills", "type": "Restaurant", "fssai": "10519022008005", "fs": "Valid", "insp": "2025-12-20", "score": 83, "adult": false, "chain": null, "owner": "Rajesh Malhotra", "phone": "+91 98463 45678", "dishes": [{"n": "Chicken Grill", "t": "best"}, {"n": "Fish Tikka", "t": "healthy"}, {"n": "Paneer Tikka", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-20"}}, {"id": 112, "name": "Guntur Chilli Chicken", "area": "Begumpet", "cuisine": "Andhra Spicy Chicken", "type": "Street Food", "fssai": null, "fs": "Not Registered", "insp": "Never", "score": 37, "adult": false, "chain": null, "owner": "Guntur Raju", "phone": "+91 98464 56789", "dishes": [{"n": "Chilli Chicken", "t": "popular"}, {"n": "Chicken Fry", "t": "popular"}], "lastInspector": null}, {"id": 113, "name": "The Yellow Brick", "area": "Begumpet", "cuisine": "American & Continental", "type": "Restaurant", "fssai": "10519022008006", "fs": "Valid", "insp": "2025-12-28", "score": 81, "adult": false, "chain": null, "owner": "Sid Mathew", "phone": "+91 98465 67890", "dishes": [{"n": "Classic Burger", "t": "popular"}, {"n": "Grilled Chicken Wrap", "t": "healthy"}, {"n": "Brownie Sundae", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-28"}}, {"id": 114, "name": "Noodle Station Begumpet", "area": "Begumpet", "cuisine": "Asian Noodles", "type": "Restaurant", "fssai": "10519022008007", "fs": "Valid", "insp": "2025-12-10", "score": 77, "adult": false, "chain": null, "owner": "Kim Jong Ho", "phone": "+91 98466 78901", "dishes": [{"n": "Ramen", "t": "best"}, {"n": "Steamed Bao", "t": "healthy"}, {"n": "Fried Noodles", "t": "popular"}], "lastInspector": {"name": "N. Lakshmi Devi", "id": "FSSAI/TS/INS/2024/0083", "des": "FSO, Ameerpet Zone", "verdict": "pass", "date": "2025-12-10"}}];
+
+const CHAINS = {};
+HOTELS.forEach(h => { if(h.chain){if(!CHAINS[h.chain])CHAINS[h.chain]=[];CHAINS[h.chain].push(h.id);} });
+const REPORTS = {};
+HOTELS.forEach(h => { REPORTS[h.id] = []; });
+
+let currentHotel = null, currentRole = 'customer';
+let activeArea = '', activeQF = '';
+
+function sc(s){return s>=80?'sg':s>=60?'sy':'sr';}
+function sl(s){return s>=80?'Good':s>=60?'Caution':'Risk';}
+function bc(s){return s>=80?'#2E7D32':s>=60?'#B45309':'#C62828';}
+function fssaiTag(h){
+  if(h.fs==='Valid') return `<span class="tag t-fs">FSSAI <span style="font-family:monospace;font-size:.6rem">${h.fssai}</span></span>`;
+  if(h.fs==='Expired') return `<span class="tag t-e">FSSAI Expired</span>`;
+  return `<span class="tag t-n">No FSSAI</span>`;
+}
+function initials(name){return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function goHome(){document.getElementById('navBtn').style.display='none';showPage('pg-home');}
+
+function updateStats(){
+  document.getElementById('sTot').textContent=HOTELS.length;
+  document.getElementById('sGood').textContent=HOTELS.filter(h=>h.score>=80).length;
+  document.getElementById('sFssai').textContent=HOTELS.filter(h=>h.fs==='Valid').length;
+  document.getElementById('sRisk').textContent=HOTELS.filter(h=>h.score<60).length;
+}
+
+// HEATMAP
+function buildHeatmap(){
+  const areas = [...new Set(HOTELS.map(h=>h.area))];
+  const grid = document.getElementById('hmGrid');
+  grid.innerHTML = areas.map(area => {
+    const ahotels = HOTELS.filter(h=>h.area===area);
+    const avg = Math.round(ahotels.reduce((s,h)=>s+h.score,0)/ahotels.length);
+    const bg = avg>=80?'#E8F5E9':avg>=60?'#FFF8E1':'#FDECEA';
+    const col = avg>=80?'#2E7D32':avg>=60?'#B45309':'#C62828';
+    const isActive = area===activeArea;
+    return `<div class="area-tile ${isActive?'active-area':''}" style="background:${bg};color:${col}" onclick="clickArea('${area}')">
+      <div class="area-tile-name">${area}</div>
+      <div class="area-tile-count">${ahotels.length} venues</div>
+      <div class="area-tile-score">${avg}/100 avg</div>
+    </div>`;
+  }).join('');
+  document.getElementById('hmToggle').classList.toggle('open', true);
+}
+function toggleHeatmap(){
+  const grid = document.getElementById('hmGrid');
+  const toggle = document.getElementById('hmToggle');
+  if(grid.style.display==='none'){grid.style.display='grid';toggle.classList.add('open');}
+  else{grid.style.display='none';toggle.classList.remove('open');}
+}
+function clickArea(area){
+  activeArea = activeArea===area?'':area;
+  buildHeatmap();
+  renderGrid();
+}
+
+// QUICK FILTERS
+function setQF(el,val){
+  activeQF=val;
+  document.querySelectorAll('.qf').forEach(e=>e.classList.remove('active','active-green'));
+  el.classList.add(val==='healthy'?'active-green':'active');
+  if(val==='') el.classList.add('active');
+  renderGrid();
+}
+
+// RENDER GRID
+function renderGrid(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const type=document.getElementById('typeFilter').value;
+  const lic=document.getElementById('licFilter').value;
+  const srt=document.getElementById('sortSel').value;
+  let list=HOTELS.filter(h=>{
+    const dm=!q||h.name.toLowerCase().includes(q)||h.cuisine.toLowerCase().includes(q)||h.area.toLowerCase().includes(q)||h.type.toLowerCase().includes(q)||(h.dishes&&h.dishes.some(d=>d.n.toLowerCase().includes(q)));
+    const am=!activeArea||h.area===activeArea;
+    const tm=!type||h.type===type;
+    const lm=!lic||h.fs===lic;
+    let qf=true;
+    if(activeQF==='healthy') qf=h.dishes&&h.dishes.some(d=>d.t==='healthy');
+    if(activeQF==='fssai') qf=h.fs==='Valid';
+    if(activeQF==='good') qf=h.score>=80;
+    if(activeQF==='risk') qf=h.score<60;
+    return dm&&am&&tm&&lm&&qf;
+  });
+  if(srt==='sd') list.sort((a,b)=>b.score-a.score);
+  else if(srt==='sa') list.sort((a,b)=>a.score-b.score);
+  else if(srt==='na') list.sort((a,b)=>a.name.localeCompare(b.name));
+  const grid=document.getElementById('hotelGrid');
+  document.getElementById('rc').textContent=`${list.length} venue${list.length!==1?'s':''}`;
+  if(!list.length){grid.innerHTML='<div class="loading">No venues match your filters.</div>';return;}
+  grid.innerHTML=list.map((h,i)=>{
+    const rpc=REPORTS[h.id]?.length||0;
+    const bestDish=h.dishes?.find(d=>d.t==='best');
+    const branches=h.chain?CHAINS[h.chain].filter(id=>id!==h.id):[];
+    return `<div class="hotel-card" onclick="showDetail(${h.id})" style="animation-delay:${Math.min(i,20)*25}ms">
+      <div class="card-top">
+        <div>
+          <div class="hotel-name">${h.name}</div>
+          <div class="hotel-meta">${h.cuisine} · ${h.type}</div>
+          <div class="hotel-meta">${h.area} · Last checked: ${h.insp}</div>
+        </div>
+        <div class="sb ${sc(h.score)}">${h.score}<small>${sl(h.score)}</small></div>
+      </div>
+      <div class="sbt"><div class="sbf" style="width:0%;background:${bc(h.score)}" data-w="${h.score}"></div></div>
+      <div class="card-tags">
+        <span class="tag t-ty">${h.type}</span>
+        ${fssaiTag(h)}
+        ${rpc>0?`<span class="tag t-rp">${rpc} report${rpc!==1?'s':''}</span>`:''}
+        ${branches.length>0?`<span class="tag t-br">${branches.length+1} branches</span>`:''}
+        ${h.adult?'<span class="tag t-ad">Adulteration flagged</span>':''}
+        ${h.dishes&&h.dishes.some(d=>d.t==='healthy')?'<span class="tag t-h">✓ Healthy options</span>':''}
+      </div>
+      ${bestDish?`<div class="bds">Best: ${bestDish.n}</div>`:''}
+      ${h.adult?'<div class="ab">Community observation: adulteration suspected.</div>':''}
+    </div>`;
+  }).join('');
+  requestAnimationFrame(()=>{document.querySelectorAll('.sbf').forEach(el=>{setTimeout(()=>{el.style.width=el.dataset.w+'%';},80);});});
+}
+
+// DETAIL
+function showDetail(id){
+  currentHotel=HOTELS.find(h=>h.id===id);if(!currentHotel)return;
+  const h=currentHotel;
+  document.getElementById('navBtn').style.display='inline-block';
+  document.getElementById('navBtn').onclick=()=>startReport(id,'customer');
+  const reps=REPORTS[id]||[];
+  const branches=h.chain?CHAINS[h.chain].filter(bid=>bid!==h.id).map(bid=>HOTELS.find(x=>x.id===bid)).filter(Boolean):[];
+  const bestBranchId=h.chain?CHAINS[h.chain].reduce((best,bid)=>{const bh=HOTELS.find(x=>x.id===bid);return bh&&bh.score>(HOTELS.find(x=>x.id===best)?.score||0)?bid:best;},CHAINS[h.chain][0]):null;
+  const nearby=HOTELS.filter(x=>x.id!==id&&x.area===h.area&&x.type===h.type).slice(0,4);
+  const allDishes=h.dishes||[];
+  const bestDishes=allDishes.filter(d=>d.t==='best');
+  const healthyDishes=allDishes.filter(d=>d.t==='healthy');
+
+  // FSSAI block
+  let fb='';
+  if(h.fs==='Valid'){
+    fb=`<div class="fssai-box"><div class="fssai-shield" style="background:linear-gradient(135deg,#1a237e,#3730A3)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div><div class="fssai-info"><div class="fssai-lbl" style="color:#3730A3">FSSAI Verified</div><div class="fssai-num">${h.fssai}</div><div class="fssai-sub">License valid · Food Safety & Standards Authority of India</div></div><span class="fssai-pill t-v" style="padding:5px 12px">Active</span></div>`;
+  } else if(h.fs==='Expired'){
+    fb=`<div class="fssai-box" style="border-color:#F59E0B"><div class="fssai-shield" style="background:linear-gradient(135deg,#B45309,#D97706)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".5" fill="#fff"/></svg></div><div class="fssai-info"><div class="fssai-lbl" style="color:#B45309">FSSAI Expired</div><div class="fssai-num">${h.fssai}</div><div class="fssai-sub">License expired — renewal required</div></div><span class="fssai-pill t-e" style="padding:5px 12px">Expired</span></div>`;
+  } else {
+    fb=`<div class="fssai-box" style="border-color:#EF4444"><div class="fssai-shield" style="background:linear-gradient(135deg,#B91C1C,#DC2626)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="fssai-info"><div class="fssai-lbl" style="color:#B91C1C">Not Registered</div><div class="fssai-num" style="font-size:.82rem;color:var(--txt3)">No license on record</div><div class="fssai-sub">Operating without mandatory food safety registration</div></div><span class="fssai-pill t-n" style="padding:5px 12px">Unregistered</span></div>`;
+  }
+
+  // Owner contact
+  const ownerBlock = h.owner?`<div class="owner-box">
+    <div class="owner-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <div>
+      <div class="owner-label">Establishment Contact</div>
+      <div class="owner-name">${h.owner}</div>
+      <div class="owner-phone">${h.phone||'No contact listed'}</div>
+    </div>
+  </div>`:'';
+
+  // Inspector block
+  let inspB='<div style="padding:.6rem 0;font-size:.8rem;color:var(--txt3);font-weight:400;">No official inspections on record for this venue.</div>';
+  if(h.lastInspector){
+    const li=h.lastInspector;
+    const vc=li.verdict==='pass'?'iv-pass':li.verdict==='warn'?'iv-warn':'iv-fail';
+    const vl=li.verdict==='pass'?'Passed':li.verdict==='warn'?'Warning':'Failed';
+    inspB=`<div class="insp-row">
+      <div class="insp-av">${initials(li.name)}</div>
+      <div style="flex:1"><div class="insp-name">${li.name}</div><div class="insp-id">${li.id}</div><div style="font-size:.68rem;color:var(--txt3);font-weight:300;">${li.des}</div></div>
+      <div style="text-align:right;flex-shrink:0"><span class="insp-verdict ${vc}">${vl}</span><div style="font-size:.67rem;color:var(--txt3);margin-top:4px;font-weight:300;">${li.date}</div></div>
+    </div>`;
+  }
+
+  // Dishes
+  let dishBlock='';
+  if(allDishes.length){
+    const bestHL=bestDishes.length?`<div style="background:rgba(201,74,40,.06);border-radius:8px;padding:.55rem .9rem;margin-bottom:.6rem;font-size:.78rem;color:var(--txt2);font-weight:400;"><strong style="color:var(--red)">★ Must-try:</strong> ${bestDishes.map(d=>d.n).join(', ')}</div>`:'';
+    const hlHL=healthyDishes.length?`<div style="background:#E8F5E9;border-radius:8px;padding:.55rem .9rem;margin-bottom:.6rem;font-size:.78rem;color:#2E7D32;font-weight:400;"><strong>✓ Healthy:</strong> ${healthyDishes.map(d=>d.n).join(', ')}</div>`:'';
+    const grid=`<div class="dish-grid">${allDishes.map(d=>{
+      const dt=d.t==='best'?'<span class="dish-tag dt-best">★ Best</span>':d.t==='healthy'?'<span class="dish-tag dt-healthy">✓ Healthy</span>':'<span class="dish-tag dt-popular">Popular</span>';
+      return `<div class="dish-card"><div class="dish-name">${d.n}</div>${dt}</div>`;
+    }).join('')}</div>`;
+    dishBlock=bestHL+hlHL+grid;
+  } else { dishBlock='<div style="font-size:.8rem;color:var(--txt3);font-weight:400;">No dish data available yet.</div>'; }
+
+  // Branches
+  let branchBlock='';
+  if(branches.length){
+    const allB=[h,...branches].sort((a,b)=>b.score-a.score);
+    branchBlock=`<div class="info-box"><div class="box-title">${h.chain} — All Branches <span class="box-badge t-br">${allB.length} locations</span></div>
+      ${allB.map(b=>{
+        const isBest=b.id===bestBranchId;
+        return `<div class="branch-row" onclick="${b.id!==h.id?`showDetail(${b.id})`:''}">
+          <div><span class="br-name">${b.name}${isBest?'<span class="best-b">Best Branch</span>':''}</span><div class="br-area">${b.area} · Score ${b.score}/100</div></div>
+          <div class="sb ${sc(b.score)}" style="width:42px;height:42px;font-size:.88rem;border-radius:8px;">${b.score}<small>${sl(b.score)}</small></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Reports
+  let repBlock=reps.length?reps.map(r=>{
+    const isI=r.role==='inspector';
+    return `<div class="rep-row">
+      <div class="rep-av ${isI?'insp':'cust'}">${isI?initials(r.inspName||'IN'):'?'}</div>
+      <div style="flex:1;min-width:0"><div class="rep-who">${isI?r.inspName:'Anonymous Citizen'}</div>${isI?`<div style="font-family:monospace;font-size:.66rem;color:var(--txt3)">${r.inspId||''}</div>`:''}<div class="rep-note">${r.note||'No additional notes.'}</div></div>
+      <div class="rep-date">${r.date}</div>
+    </div>`;
+  }).join(''):'<div style="padding:.6rem 0;font-size:.8rem;color:var(--txt3);font-weight:400;">No community reports yet.</div>';
+
+  document.getElementById('detailWrap').innerHTML=`
+    <div class="detail-hero">
+      <div>
+        <button class="back-btn" onclick="goHome()">← Directory</button>
+        <div class="detail-name">${h.name}</div>
+        <div class="detail-meta">${h.cuisine} · ${h.type} · ${h.area}</div>
+        <div style="margin-top:.6rem;display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag t-ty">${h.type}</span>
+          ${h.fs==='Valid'?`<span class="tag t-fs">FSSAI ${h.fssai}</span>`:h.fs==='Expired'?'<span class="tag t-e">FSSAI Expired</span>':'<span class="tag t-n">No FSSAI</span>'}
+          ${h.chain?`<span class="tag t-br">${h.chain}</span>`:''}
+          ${h.adult?'<span class="tag t-ad">Adulteration flagged</span>':''}
+        </div>
+      </div>
+      <div class="sc-circle ${sc(h.score)}">${h.score}<small>${sl(h.score)}</small></div>
+    </div>
+    ${fb}
+    ${ownerBlock}
+    <div class="action-btns">
+      <button class="btn btn-red" onclick="startReport(${h.id},'customer')">File Customer Report</button>
+      <button class="btn btn-ghost" onclick="startReport(${h.id},'inspector')">FSSAI Inspector Audit</button>
+    </div>
+    <div class="info-box"><div class="box-title">Dishes & Recommendations</div>${dishBlock}</div>
+    ${branchBlock}
+    <div class="info-box"><div class="box-title">Last Official Inspection</div>${inspB}</div>
+    <div class="info-box">
+      <div class="box-title">Venue Info <span class="box-badge" style="background:rgba(201,74,40,.1);color:var(--red)">${h.score}/100</span></div>
+      <div class="sbt" style="margin-bottom:.9rem"><div class="sbf" style="width:0%;background:${bc(h.score)}" data-w="${h.score}"></div></div>
+      <div class="detail-grid">
+        <div class="dg-item">Type<span class="dg-val">${h.type}</span></div>
+        <div class="dg-item">Cuisine<span class="dg-val">${h.cuisine}</span></div>
+        <div class="dg-item">Area<span class="dg-val">${h.area}</span></div>
+        <div class="dg-item">Last Inspected<span class="dg-val">${h.insp}</span></div>
+        <div class="dg-item">FSSAI Status<span class="dg-val">${h.fs}</span></div>
+        ${h.chain?`<div class="dg-item">Chain<span class="dg-val">${h.chain}</span></div>`:''}
+      </div>
+    </div>
+    <div class="info-box"><div class="box-title">Community Reports <span class="box-badge" style="background:rgba(201,74,40,.1);color:var(--red)">${reps.length}</span></div>${repBlock}</div>
+    ${nearby.length?`<div class="info-box"><div class="box-title">Similar in ${h.area}</div>${nearby.map(x=>`<div class="nearby-row" onclick="showDetail(${x.id})"><div><div class="nr-name">${x.name}</div><div class="nr-meta">${x.cuisine}</div></div><div class="sb ${sc(x.score)}" style="width:42px;height:42px;font-size:.88rem;border-radius:8px;">${x.score}<small>${sl(x.score)}</small></div></div>`).join('')}</div>`:''}
+  `;
+  showPage('pg-detail');
+  requestAnimationFrame(()=>{document.querySelectorAll('.sbf').forEach(el=>{setTimeout(()=>{el.style.width=el.dataset.w+'%';},100);});});
+}
+
+// REPORT FORM
+function startReport(hotelId,role){
+  if(hotelId) currentHotel=HOTELS.find(h=>h.id===hotelId);
+  currentRole=role||'customer';
+  document.getElementById('formTitle').textContent=currentHotel?`Report: ${currentHotel.name}`:'File a Report';
+  document.getElementById('formHotel').textContent=currentHotel?`${currentHotel.cuisine} · ${currentHotel.area}`:'';
+  document.getElementById('formContent').style.display='block';
+  document.getElementById('successScreen').style.display='none';
+  switchRole(currentRole);chkAlerts();
+  showPage('pg-form');
+}
+function switchRole(role){
+  currentRole=role;
+  document.getElementById('tab-c').classList.toggle('active',role==='customer');
+  document.getElementById('tab-i').classList.toggle('active',role==='inspector');
+  document.getElementById('cl-c').classList.toggle('active',role==='customer');
+  document.getElementById('cl-i').classList.toggle('active',role==='inspector');
+  document.getElementById('inspBox').style.display=role==='inspector'?'block':'none';
+}
+function chkAlerts(){
+  document.getElementById('aAlert').classList.toggle('show',!!(document.getElementById('cc7')?.checked));
+  document.getElementById('pAlert').classList.toggle('show',!!(document.getElementById('cc8')?.checked));
+}
+function showFn(inp,tid){document.getElementById(tid).textContent=inp.files.length?'Selected: '+Array.from(inp.files).map(f=>f.name).join(', '):'';} 
+function submitReport(){
+  const note=document.getElementById('repNotes').value.trim();
+  const date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const rid='CS-'+Date.now().toString(36).toUpperCase();
+  if(currentRole==='inspector'){
+    const nm=document.getElementById('inspName').value.trim();
+    const iid=document.getElementById('inspId').value.trim();
+    if(!nm||!iid){alert('Inspector name and FSSAI ID are required.');return;}
+  }
+  if(currentHotel){
+    const adult=currentRole==='customer'&&document.getElementById('cc7')?.checked;
+    if(adult)currentHotel.adult=true;
+    const entry={id:rid,role:currentRole,date,note};
+    if(currentRole==='inspector'){
+      entry.inspName=document.getElementById('inspName').value.trim();
+      entry.inspId=document.getElementById('inspId').value.trim();
+    }
+    REPORTS[currentHotel.id].push(entry);
+    renderGrid();
+  }
+  document.getElementById('formContent').style.display='none';
+  document.getElementById('successId').textContent='Report ID: '+rid;
+  document.getElementById('successScreen').style.display='block';
+}
+function resetForm(){
+  document.getElementById('formContent').style.display='block';
+  document.getElementById('successScreen').style.display='none';
+  document.getElementById('repNotes').value='';
+  ['inspName','inspId','inspDes','inspRef'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('#pg-form input[type=checkbox]').forEach(cb=>{cb.checked=cb.defaultChecked;});
+  chkAlerts();
+}
+// INIT
+updateStats();
+buildHeatmap();
+renderGrid();
+document.querySelector('.qf').classList.add('active');
+
+</script>
+</body>
+</html>
