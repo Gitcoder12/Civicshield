@@ -173,10 +173,10 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
     approved = [item for item in reports if item["status"] == "Approved"]
 
     if view == "Citizen View — Approved report locations":
-        fig = px.scatter_mapbox(
+        fig = px.scatter_map(
             venues, lat="lat", lon="lon", hover_name="name", color="cuisine",
             hover_data={"area": True, "address": True, "osm_ref": True, "lat": False, "lon": False},
-            zoom=10, center=center, mapbox_style="open-street-map",
+            zoom=10, center=center, map_style="open-street-map",
             title="OpenStreetMap restaurant locations and approved reports",
         )
         geolocated = [
@@ -186,7 +186,7 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
         if geolocated:
             report_frame = pd.DataFrame(geolocated)
             fig.add_trace(
-                go.Scattermapbox(
+                go.Scattermap(
                     lat=report_frame["venue_lat"], lon=report_frame["venue_lon"],
                     mode="markers", name="Human-approved reports",
                     marker={"size": 15, "color": "#dc2626"},
@@ -199,7 +199,7 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
                     ),
                 )
             )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         st.metric("Human-approved complaints", len(approved))
         without_location = len(approved) - len(geolocated)
         if without_location:
@@ -216,20 +216,20 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
             .reset_index()
             .sort_values("listed_restaurants", ascending=True)
         )
-        fig = px.scatter_mapbox(
+        fig = px.scatter_map(
             supply, lat="lat", lon="lon", size="listed_restaurants",
             color="listed_restaurants", hover_name="area",
             hover_data={"listed_restaurants": True, "lat": False, "lon": False},
             color_continuous_scale="Teal", size_max=34, zoom=10, center=center,
-            mapbox_style="open-street-map",
+            map_style="open-street-map",
             title="Restaurant supply represented in OpenStreetMap",
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         st.dataframe(
             supply[["area", "listed_restaurants"]].rename(
                 columns={"area": "OSM-tagged area", "listed_restaurants": "Named restaurants"}
             ),
-            use_container_width=True, hide_index=True,
+            width="stretch", hide_index=True,
         )
         st.warning(
             "Population-density data is not connected. This is an OSM restaurant "
@@ -286,7 +286,7 @@ st.markdown(
 with st.sidebar:
     st.markdown("### Data connection")
     st.caption("OpenStreetMap · Overpass API")
-    if st.button("Refresh restaurant snapshot", use_container_width=True):
+    if st.button("Refresh restaurant snapshot", width="stretch"):
         fetch_hyderabad_restaurants.clear()
         st.rerun()
     st.caption("Automatic cache: 6 hours. Manual refresh is available above.")
@@ -426,7 +426,7 @@ with map_tab:
         else:
             st.dataframe(
                 OSM_VENUES[["name", "cuisine", "area", "address", "osm_ref", "osm_url"]],
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 column_config={
                     "osm_url": st.column_config.LinkColumn("OpenStreetMap record"),
@@ -473,7 +473,7 @@ with map_tab:
                     st.link_button(
                         "View OSM record",
                         venue["osm_url"],
-                        use_container_width=True,
+                        width="stretch",
                     )
         if len(filtered_venues) > card_limit:
             st.caption(f"Showing the first {card_limit} results. Refine the search to narrow the list.")
@@ -533,7 +533,7 @@ with admin_tab:
                     "Approve for public map",
                     key=f"approve_{report['id']}",
                     type="primary",
-                    use_container_width=True,
+                    width="stretch",
                 ):
                     report["status"] = "Approved"
                     report["review_note"] = note.strip()
@@ -543,7 +543,7 @@ with admin_tab:
                 if st.button(
                     "Reject",
                     key=f"reject_{report['id']}",
-                    use_container_width=True,
+                    width="stretch",
                 ):
                     report["status"] = "Rejected"
                     report["review_note"] = note.strip()
@@ -569,7 +569,7 @@ with admin_tab:
                 for item in reviewed
             ]
         )
-        st.dataframe(history, use_container_width=True, hide_index=True)
+        st.dataframe(history, width="stretch", hide_index=True)
     else:
         st.caption("No moderation decisions have been recorded in this session.")
 

@@ -58,7 +58,8 @@ def test_streamlit_app_submit_approve_and_reject_flow(monkeypatch):
 
     area_selector = next(item for item in app.selectbox if item.label == "Area")
     area_selector.select("Madhapur")
-    venue_selector.select(venue_selector.options[1])
+    madhapur_option = next(option for option in venue_selector.options if "[node/501]" in option)
+    venue_selector.select(madhapur_option)
     app.text_area[0].set_value("I found a hair in my food")
 
     submit_button = next(item for item in app.button if item.label == "Submit for human review")
@@ -69,6 +70,9 @@ def test_streamlit_app_submit_approve_and_reject_flow(monkeypatch):
     assert reports[0]["status"] == "Pending"
     assert reports[0]["category"] == "Hygiene"
     assert reports[0]["osm_ref"] == "node/501"
+    assert reports[0]["venue"] == "QA Test Kitchen"
+    assert reports[0]["area"] == "Madhapur"
+
     assert not app.exception
 
     approve_button = next(item for item in app.button if item.label == "Approve for public map")
