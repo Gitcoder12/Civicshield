@@ -171,6 +171,7 @@ V2 includes a Plotly map with two separate views.
 
 - Aggregates returned named OSM restaurant objects by available OSM address-area tags.
 - Shows restaurant listing counts and mapped locations by tagged area.
+- Provides searchable restaurant cards with direct links to the underlying OSM objects.
 - Does **not** yet calculate population-versus-restaurant market gaps.
 
 A valid market-gap analysis requires a separate, sourced and appropriately licensed demographic or population-density dataset at a compatible geographic resolution. Until that data source is integrated, the app intentionally avoids claiming that any area is underserved or commercially attractive.

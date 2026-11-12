@@ -523,6 +523,47 @@ with map_tab:
                 "Only mapped and named OSM objects are represented."
             )
 
+    st.subheader("Restaurant directory")
+    venue_search = st.text_input(
+        "Search by restaurant, cuisine or OSM-tagged area",
+        placeholder="Try a restaurant name, cuisine or neighbourhood",
+        key="osm_venue_search",
+    )
+    filtered_venues = OSM_VENUES.copy()
+    if venue_search.strip():
+        searchable = (
+            filtered_venues[["name", "cuisine", "area", "address"]]
+            .fillna("")
+            .astype(str)
+            .agg(" ".join, axis=1)
+        )
+        filtered_venues = filtered_venues[
+            searchable.str.contains(venue_search.strip(), case=False, regex=False)
+        ]
+    st.caption(f"{len(filtered_venues):,} matching named OSM restaurant records")
+    if filtered_venues.empty:
+        st.info("No matching OSM restaurant records in the current cached snapshot.")
+    else:
+        card_limit = min(len(filtered_venues), 12)
+        for offset in range(0, card_limit, 3):
+            card_columns = st.columns(3)
+            for card_column, venue in zip(
+                card_columns,
+                filtered_venues.iloc[offset : offset + 3].to_dict(orient="records"),
+            ):
+                with card_column:
+                    with st.container(border=True):
+                        st.text(venue["name"])
+                        st.caption(f"{venue['cuisine']} · {venue['area']}")
+                        st.write(venue["address"])
+                        st.link_button(
+                            "View OSM record",
+                            venue["osm_url"],
+                            use_container_width=True,
+                        )
+        if len(filtered_venues) > card_limit:
+            st.caption(f"Showing the first {card_limit} results. Refine the search to narrow the list.")
+
     with st.expander("Data coverage and market-gap limitations"):
         st.write(
             "The live layer measures restaurant listings recorded in OSM. It does not "
