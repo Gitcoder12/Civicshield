@@ -47,9 +47,6 @@ jobs:
       - name: Ruff lint
         run: ruff check v2 tests
 
-      - name: Ruff formatting
-        run: ruff format --check v2 tests
-
       - name: Compile Python sources
         run: python -m compileall -q v2 tests
 

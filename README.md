@@ -274,14 +274,13 @@ Streamlit session state can be lost when a session expires, restarts or is other
 
 ## Automated quality checks
 
-The V2 branch includes unit tests for Overpass query construction, OSM node/way/relation parsing, duplicate business names, invalid and out-of-bounds records, source timestamps, and API rate-limit handling. GitHub Actions runs Ruff lint/format checks, Python compilation and tests on Python 3.11, 3.12 and 3.13.
+The V2 branch includes unit tests for Overpass query construction, OSM node/way/relation parsing, duplicate business names, invalid and out-of-bounds records, source timestamps, and API rate-limit handling. GitHub Actions runs Ruff lint checks, Python compilation and tests on Python 3.11, 3.12 and 3.13.
 
 Run the checks locally:
 
 ```bash
 pip install -r requirements-dev.txt
 ruff check v2 tests
-ruff format --check v2 tests
 python -m compileall -q v2 tests
 pytest -q
 ```
