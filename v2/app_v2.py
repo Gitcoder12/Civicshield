@@ -47,7 +47,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-APP_VERSION = "2.1.0-osm"
+APP_VERSION = "2.1.1-osm"
 FOOD_SAFETY_PORTAL = "https://foscos.fssai.gov.in/"
 OSM_COPYRIGHT_URL = "https://www.openstreetmap.org/copyright"
 
