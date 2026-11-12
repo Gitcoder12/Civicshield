@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from streamlit.testing.v1 import AppTest
 
 
@@ -46,7 +48,7 @@ def test_streamlit_app_submit_approve_and_reject_flow(monkeypatch):
 
     monkeypatch.setattr("v2.osm_data.requests.post", lambda *args, **kwargs: FakeResponse())
 
-    app = AppTest.from_file("v2/app_v2.py", default_timeout=60).run()
+    app = AppTest.from_file(Path(__file__).resolve().parents[1] / "v2" / "app_v2.py", default_timeout=60).run()
     assert not app.exception
     assert any("CivicShield V2" in item.value for item in app.title)
 
