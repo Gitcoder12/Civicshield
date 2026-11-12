@@ -14,7 +14,7 @@ Important:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pandas as pd
@@ -26,10 +26,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 try:
-    from v2.osm_data import HYDERABAD_BBOX, OSM_CACHE_SECONDS, fetch_osm_restaurants
+    from v2.osm_data import OSM_CACHE_SECONDS, build_venue_option_lookup, fetch_osm_restaurants
 except ModuleNotFoundError:
     # Streamlit may put the script directory, rather than repository root, on sys.path.
-    from osm_data import HYDERABAD_BBOX, OSM_CACHE_SECONDS, fetch_osm_restaurants
+    from osm_data import OSM_CACHE_SECONDS, build_venue_option_lookup, fetch_osm_restaurants
 
 
 st.set_page_config(
@@ -168,7 +168,7 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
         fig = px.scatter_mapbox(
             venues, lat="lat", lon="lon", hover_name="name", color="cuisine",
             hover_data={"area": True, "address": True, "osm_ref": True, "lat": False, "lon": False},
-            zoom=10, center=center, mapbox_style="carto-positron",
+            zoom=10, center=center, mapbox_style="open-street-map",
             title="OpenStreetMap restaurant locations and approved reports",
         )
         geolocated = [
@@ -288,10 +288,8 @@ osm_error = None
 with st.spinner("Loading Hyderabad restaurant records from OpenStreetMap…"):
     try:
         osm_snapshot = fetch_hyderabad_restaurants()
-    except RuntimeError as exc:
+    except (RuntimeError, TypeError, ValueError) as exc:
         osm_error = str(exc)
-    except Exception:
-        osm_error = "Unexpected data-source error. Live restaurant records are unavailable."
 
 if osm_snapshot is not None:
     OSM_VENUES = pd.DataFrame(osm_snapshot["records"])
@@ -348,16 +346,9 @@ with citizen_tab:
         if not OSM_VENUES.empty
         else ["Area not available"]
     )
-    venue_lookup = {}
-    if not OSM_VENUES.empty:
-        for venue_record in OSM_VENUES.to_dict(orient="records"):
-            # OSM can contain multiple businesses with the same name.
-            # Include the stable OSM reference in the visible option to disambiguate.
-            venue_label = (
-                f"{venue_record['name']} — {venue_record['area']} "
-                f"[{venue_record['osm_ref']}]"
-            )
-            venue_lookup[venue_label] = venue_record
+    venue_lookup = build_venue_option_lookup(
+        OSM_VENUES.to_dict(orient="records") if not OSM_VENUES.empty else []
+    )
     with st.form("citizen_complaint_form", clear_on_submit=True):
         selected_area = st.selectbox("Area", area_options)
         selected_venue = st.selectbox(
@@ -381,7 +372,7 @@ with citizen_tab:
             category, confidence = classify_complaint(cleaned_text)
             complaint = {
                 "id": str(uuid4()),
-                "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "created_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 "area": selected_area,
                 "venue": venue_lookup.get(selected_venue, {}).get("name"),
                 "venue_lat": venue_lookup.get(selected_venue, {}).get("lat"),
@@ -467,16 +458,15 @@ with map_tab:
                 card_columns,
                 filtered_venues.iloc[offset : offset + 3].to_dict(orient="records"),
             ):
-                with card_column:
-                    with st.container(border=True):
-                        st.text(venue["name"])
-                        st.caption(f"{venue['cuisine']} · {venue['area']}")
-                        st.write(venue["address"])
-                        st.link_button(
-                            "View OSM record",
-                            venue["osm_url"],
-                            use_container_width=True,
-                        )
+                with card_column, st.container(border=True):
+                    st.text(venue["name"])
+                    st.caption(f"{venue['cuisine']} · {venue['area']}")
+                    st.write(venue["address"])
+                    st.link_button(
+                        "View OSM record",
+                        venue["osm_url"],
+                        use_container_width=True,
+                    )
         if len(filtered_venues) > card_limit:
             st.caption(f"Showing the first {card_limit} results. Refine the search to narrow the list.")
 

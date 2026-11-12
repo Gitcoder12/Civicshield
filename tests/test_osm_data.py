@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import requests
 import pytest
+import requests
 
 from v2.osm_data import (
     HYDERABAD_BBOX,
     build_overpass_query,
+    build_venue_option_lookup,
     fetch_osm_restaurants,
     parse_overpass_payload,
 )
@@ -78,7 +79,7 @@ def test_parser_filters_unnamed_wrong_type_missing_coordinates_and_outside_bbox(
 
 
 def test_parser_rejects_malformed_payload():
-    with pytest.raises(ValueError, match="elements list"):
+    with pytest.raises(TypeError, match="elements list"):
         parse_overpass_payload({"elements": None})
 
 
@@ -125,3 +126,15 @@ def test_fetch_maps_rate_limit_to_actionable_error(monkeypatch):
     monkeypatch.setattr("v2.osm_data.requests.post", fake_post)
     with pytest.raises(RuntimeError, match="temporarily busy"):
         fetch_osm_restaurants()
+
+
+def test_venue_option_lookup_disambiguates_duplicate_business_names():
+    records = [
+        {"name": "Same Brand", "area": "Madhapur", "osm_ref": "node/11", "lat": 17.44},
+        {"name": "Same Brand", "area": "Gachibowli", "osm_ref": "node/12", "lat": 17.45},
+    ]
+    options = build_venue_option_lookup(records)
+    assert len(options) == 2
+    assert "Same Brand — Madhapur [node/11]" in options
+    assert "Same Brand — Gachibowli [node/12]" in options
+    assert options["Same Brand — Madhapur [node/11]"]["lat"] == pytest.approx(17.44)

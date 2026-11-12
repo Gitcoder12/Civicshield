@@ -5,7 +5,7 @@ unit-tested independently of the interactive application.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import requests
@@ -38,7 +38,7 @@ def parse_overpass_payload(
 ) -> list[dict[str, Any]]:
     """Normalize named restaurant objects and discard malformed/out-of-area rows."""
     if not isinstance(payload, dict) or not isinstance(payload.get("elements"), list):
-        raise ValueError("Overpass response did not contain an elements list.")
+        raise TypeError("Overpass response must be an object containing an elements list.")
 
     south, west, north, east = bbox
     records: list[dict[str, Any]] = []
@@ -114,6 +114,25 @@ def parse_overpass_payload(
     return records
 
 
+
+def build_venue_option_lookup(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Create unique, human-readable selectbox labels for OSM records.
+
+    Business names are not unique: restaurant chains commonly reuse names.
+    OSM object references make each option deterministic and unambiguous.
+    """
+    lookup: dict[str, dict[str, Any]] = {}
+    for record in records:
+        name = str(record.get("name") or "").strip()
+        area = str(record.get("area") or "Area not tagged in OSM")
+        osm_ref = str(record.get("osm_ref") or "").strip()
+        if not name or not osm_ref:
+            continue
+        label = f"{name} — {area} [{osm_ref}]"
+        lookup[label] = record
+    return lookup
+
+
 def fetch_osm_restaurants(
     timeout: tuple[int, int] = (10, 70),
     bbox: tuple[float, float, float, float] = HYDERABAD_BBOX,
@@ -153,7 +172,7 @@ def fetch_osm_restaurants(
     return {
         "records": records,
         "osm_data_timestamp": osm_meta.get("timestamp_osm_base", "Not supplied by Overpass"),
-        "fetched_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "fetched_at_utc": datetime.now(UTC).isoformat(timespec="seconds"),
         "record_count": len(records),
         "query_bbox": list(bbox),
     }
