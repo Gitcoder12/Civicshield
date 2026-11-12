@@ -208,10 +208,34 @@ def classify_complaint(text: str) -> tuple[str, float]:
     return category, confidence
 
 
-def priority_for(category: str, confidence: float) -> str:
-    # This flag only helps a human moderator prioritize review. It never
-    # approves, rejects, publishes, or makes a legal finding.
-    if category == "Adulteration" or confidence < 0.45:
+HIGH_RISK_TERMS = (
+    "food poisoning",
+    "poison",
+    "chemical",
+    "glass",
+    "metal fragment",
+    "metal piece",
+    "wire",
+    "mould",
+    "mold",
+    "worm",
+    "allergic reaction",
+    "allergy",
+    "hospital",
+    "severe illness",
+    "blood",
+    "contaminated",
+    "adulterated",
+    "foreign object",
+)
+
+
+def priority_for(category: str, confidence: float, complaint_text: str) -> str:
+    # These are conservative review cues, not medical or legal determinations.
+    # They only prioritize a human queue; they never publish or reject a report.
+    normalized_text = complaint_text.casefold()
+    explicit_hazard = any(term in normalized_text for term in HIGH_RISK_TERMS)
+    if category == "Adulteration" or confidence < 0.45 or explicit_hazard:
         return "High — human review requested"
     return "Standard — human review required"
 
@@ -397,7 +421,7 @@ with citizen_tab:
                 "text": cleaned_text,
                 "category": category,
                 "confidence": confidence,
-                "priority": priority_for(category, confidence),
+                "priority": priority_for(category, confidence, cleaned_text),
                 "status": "Pending",
                 "review_note": "",
             }

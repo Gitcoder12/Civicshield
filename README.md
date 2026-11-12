@@ -184,7 +184,7 @@ The prototype trains a small Scikit-Learn pipeline using a hand-written demonstr
    - `Staff`
    - `Other`
 3. The predicted category and model confidence are displayed as triage hints.
-4. Adulteration suggestions and low-confidence predictions receive a high-priority review flag.
+4. Adulteration suggestions, explicit hazard phrases (for example suspected poisoning, chemicals or foreign objects), and low-confidence predictions receive a high-priority review flag. These are conservative triage cues, not medical or legal findings.
 
 The embedded corpus is deliberately small and is not representative of all languages, dialects, reporting styles, food types or real-world incidents. The classifier has not been validated for operational accuracy. Its confidence is not the probability that a complaint is true.
 
