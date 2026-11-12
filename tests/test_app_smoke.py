@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import requests
 from streamlit.testing.v1 import AppTest
 
 
