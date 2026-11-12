@@ -129,7 +129,7 @@ python -m venv .venv
 # macOS / Linux
 # source .venv/bin/activate
 
-pip install streamlit pandas plotly scikit-learn
+pip install -r requirements.txt
 streamlit run v2/app_v2.py
 ```
 
@@ -141,37 +141,41 @@ During the transition from the original concept to V2, we separated the desired 
 
 **No public FSSAI/FoSCoS API integration is implemented in this prototype.** We therefore do not claim that CivicShield performs automatic, live license verification. The application links users to the official [FoSCoS portal](https://foscos.fssai.gov.in/) for manual verification.
 
-V2 uses structured **synthetic OSM-style venue fixtures** to demonstrate geospatial data handling and map interaction. The records follow familiar OpenStreetMap tag conventions such as `amenity`, `shop` and `cuisine`, but they are not downloaded OSM records and do not have real OSM object IDs.
+V2 fetches named `amenity=restaurant` objects in the Hyderabad bounding box from the [OpenStreetMap Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API). The query covers OSM nodes, ways and relations; records are normalized to include the OSM object reference, name, cuisine where tagged, address fields, coordinates and source URL.
 
-The area-level population-density and restaurant-supply values are illustrative planning indices. They are not official census statistics, verified restaurant counts, market research or food-safety measurements.
+The app caches the Overpass response for six hours with Streamlit's `st.cache_data`, uses a descriptive User-Agent, and offers a manual refresh. If Overpass is unavailable, the app reports the failure and displays no synthetic fallback. A successful response may omit unnamed or incompletely tagged businesses; OSM completeness is not guaranteed.
+
+OpenStreetMap data is available under the [Open Database License (ODbL)](https://www.openstreetmap.org/copyright). The app displays attribution and links back to source objects. The map basemap is rendered separately from the OSM data query; production tile usage must follow the selected tile provider's policy.
+
+This does not change the FSSAI boundary: CivicShield does not claim that OSM records are licensed or inspected. Official licensing questions still link to the [FoSCoS portal](https://foscos.fssai.gov.in/).
 
 This distinction is intentional:
 
-- A real place name is not proof of a valid food license.
-- An OSM venue record is not a hygiene inspection.
+- A real OSM object proves only that an object is present in OSM data; it is not proof of a valid food license or safe hygiene.
+- A missing OSM record does not prove a restaurant does not exist.
 - A citizen complaint is an allegation until reviewed.
 - A visualization is not evidence unless its source, method and limitations are disclosed.
 
-A future live-data integration should use a documented, licensed OSM extract or supported Overpass workflow with attribution, source timestamps, object identifiers and refresh/error handling. Any official licensing integration must use an authorized interface or permitted data source.
-
 ## Geospatial map: Citizen View and Brand View
 
-V2 includes a Plotly map with two separate analytical views.
+V2 includes a Plotly map with two separate views.
 
-### Citizen View — approved report density
+### Citizen View — approved report locations
 
-- Displays area-level counts of complaints approved by a human moderator.
-- Pending and rejected reports are excluded.
-- If no report has been approved, the area remains at zero; the map does not invent report density.
-- Venue markers are explicitly identified as synthetic OSM-style fixtures.
+- Displays real OSM restaurant locations returned by the current Overpass snapshot.
+- Displays complaint markers only when a human moderator has explicitly approved the complaint and the reporter selected an OSM venue.
+- Pending and rejected complaints are excluded.
+- Complaints without a selected venue are not assigned fabricated coordinates.
 
-### Brand View — market-gap exploration
+### Brand View — restaurant supply coverage
 
-- Compares an illustrative population-density index with an illustrative restaurant-supply index.
-- Calculates a simple gap proxy: population-demand index minus restaurant-supply index, clipped at zero.
-- Highlights candidate areas that may merit additional market research.
+- Aggregates returned named OSM restaurant objects by available OSM address-area tags.
+- Shows restaurant listing counts and mapped locations by tagged area.
+- Does **not** yet calculate population-versus-restaurant market gaps.
 
-The market-gap view is a demonstration of an analytical method, not a validated commercial opportunity assessment. Replace its fixture inputs with sourced and dated data before making investment, expansion or site-selection decisions.
+A valid market-gap analysis requires a separate, sourced and appropriately licensed demographic or population-density dataset at a compatible geographic resolution. Until that data source is integrated, the app intentionally avoids claiming that any area is underserved or commercially attractive.
+
+The Overpass response timestamp and local fetch time are shown in the application. The six-hour cache limits repeated requests during normal Streamlit reruns; a manual refresh is available. Public Overpass services are shared infrastructure, so production deployments should consider a controlled refresh job or managed provider rather than querying on every user session.
 
 ## AI NLP triage: TF-IDF + Logistic Regression
 
@@ -251,7 +255,7 @@ The current V2 application is a local demonstration, not a production SaaS servi
 | Capability | Current state |
 |---|---|
 | Streamlit interface | Implemented in V2 app |
-| Plotly map | Uses synthetic venue and area fixtures |
+| Plotly map | Live named OSM restaurant snapshot via Overpass; approved report markers |
 | Citizen report submission | Session-only demonstration |
 | NLP triage | Small embedded TF-IDF + Logistic Regression model |
 | Human moderation | Session-only approve/reject flow |
@@ -262,6 +266,7 @@ The current V2 application is a local demonstration, not a production SaaS servi
 | FSSAI integration | Official portal link; no API integration |
 | Persistent database | Not implemented |
 | Authentication / RBAC | Not implemented |
+| Population-density market-gap layer | Not integrated; no fabricated demand values |
 | Production deployment | Not established |
 
 Streamlit session state can be lost when a session expires, restarts or is otherwise reset. Do not use this build to submit real sensitive complaints or upload confidential evidence.

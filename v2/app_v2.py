@@ -1,11 +1,12 @@
 """CivicShield V2 — evidence-led civic food-safety workflow demo.
 
 Run from the repository root:
-    pip install streamlit pandas plotly scikit-learn
+    pip install -r requirements.txt
     streamlit run v2/app_v2.py
 
 Important:
-- Venue and area metrics are synthetic OSM-style fixtures, not live OSM extracts.
+- Restaurant records are fetched from OpenStreetMap through the Overpass API and cached for six hours.
+- Population-density data is not yet connected, so the app does not claim a verified market-gap result.
 - Complaint classification is a small demonstration model, not a validated safety system.
 - New reports remain pending until a human moderator approves them.
 - State is held in Streamlit's session memory only; no database or real payment is configured.
@@ -17,6 +18,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import pandas as pd
+import requests
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
@@ -32,107 +34,13 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-APP_VERSION = "2.0.0-demo"
+APP_VERSION = "2.1.0-osm"
 FOOD_SAFETY_PORTAL = "https://foscos.fssai.gov.in/"
-OSM_COPYRIGHT = "© OpenStreetMap contributors"
-
-# These are synthetic records shaped around common OSM tags. They are not
-# imported from OpenStreetMap and are not assertions about real businesses.
-VENUE_FIXTURES = [
-    {
-        "venue_id": "fixture-osm-001",
-        "name": "Sample Eatery — HITEC City",
-        "area": "HITEC City",
-        "lat": 17.4435,
-        "lon": 78.3772,
-        "cuisine": "Indian",
-        "osm_tags": {"amenity": "restaurant", "cuisine": "indian"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-002",
-        "name": "Sample Cafe — Madhapur",
-        "area": "Madhapur",
-        "lat": 17.4483,
-        "lon": 78.3915,
-        "cuisine": "Cafe",
-        "osm_tags": {"amenity": "cafe", "cuisine": "coffee_shop"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-003",
-        "name": "Sample Restaurant — Gachibowli",
-        "area": "Gachibowli",
-        "lat": 17.4401,
-        "lon": 78.3489,
-        "cuisine": "Multi-cuisine",
-        "osm_tags": {"amenity": "restaurant", "cuisine": "multi_cuisine"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-004",
-        "name": "Sample Food Court — Kukatpally",
-        "area": "Kukatpally",
-        "lat": 17.4933,
-        "lon": 78.3996,
-        "cuisine": "Food court",
-        "osm_tags": {"amenity": "food_court"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-005",
-        "name": "Sample Diner — Banjara Hills",
-        "area": "Banjara Hills",
-        "lat": 17.4156,
-        "lon": 78.4347,
-        "cuisine": "Indian",
-        "osm_tags": {"amenity": "restaurant", "cuisine": "indian"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-006",
-        "name": "Sample Bakery — Secunderabad",
-        "area": "Secunderabad",
-        "lat": 17.4399,
-        "lon": 78.4983,
-        "cuisine": "Bakery",
-        "osm_tags": {"shop": "bakery"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-007",
-        "name": "Sample Kitchen — Ameerpet",
-        "area": "Ameerpet",
-        "lat": 17.4375,
-        "lon": 78.4483,
-        "cuisine": "South Indian",
-        "osm_tags": {"amenity": "restaurant", "cuisine": "south_indian"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-    {
-        "venue_id": "fixture-osm-008",
-        "name": "Sample Bistro — Jubilee Hills",
-        "area": "Jubilee Hills",
-        "lat": 17.4310,
-        "lon": 78.4070,
-        "cuisine": "Multi-cuisine",
-        "osm_tags": {"amenity": "restaurant", "cuisine": "multi_cuisine"},
-        "source_label": "Synthetic OSM-style fixture",
-    },
-]
-
-# Illustrative planning inputs only. The two indices are deliberately not
-# represented as official population or business counts.
-AREA_FIXTURES = [
-    {"area": "HITEC City", "lat": 17.4435, "lon": 78.3772, "population_density_index": 92, "restaurant_supply_index": 61},
-    {"area": "Madhapur", "lat": 17.4483, "lon": 78.3915, "population_density_index": 88, "restaurant_supply_index": 73},
-    {"area": "Gachibowli", "lat": 17.4401, "lon": 78.3489, "population_density_index": 86, "restaurant_supply_index": 58},
-    {"area": "Kukatpally", "lat": 17.4933, "lon": 78.3996, "population_density_index": 90, "restaurant_supply_index": 56},
-    {"area": "Banjara Hills", "lat": 17.4156, "lon": 78.4347, "population_density_index": 74, "restaurant_supply_index": 82},
-    {"area": "Secunderabad", "lat": 17.4399, "lon": 78.4983, "population_density_index": 83, "restaurant_supply_index": 62},
-    {"area": "Ameerpet", "lat": 17.4375, "lon": 78.4483, "population_density_index": 87, "restaurant_supply_index": 54},
-    {"area": "Jubilee Hills", "lat": 17.4310, "lon": 78.4070, "population_density_index": 70, "restaurant_supply_index": 79},
-]
+OSM_COPYRIGHT_URL = "https://www.openstreetmap.org/copyright"
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+HYDERABAD_BBOX = (17.20, 78.30, 17.55, 78.62)
+OSM_CACHE_SECONDS = 6 * 60 * 60
+OSM_USER_AGENT = "CivicShield/2.1 (https://github.com/Gitcoder12/Civicshield)"
 
 # Small, hand-written teaching corpus. This is not a validated or production
 # training dataset. It exists to demonstrate the triage workflow end-to-end.
@@ -240,120 +148,267 @@ def priority_for(category: str, confidence: float, complaint_text: str) -> str:
     return "Standard — human review required"
 
 
-def area_summary() -> pd.DataFrame:
-    areas = pd.DataFrame(AREA_FIXTURES)
-    published = [
-        report
-        for report in st.session_state.complaints
-        if report["status"] == "Approved"
-    ]
-    counts = pd.Series([report["area"] for report in published]).value_counts()
-    areas["approved_report_count"] = areas["area"].map(counts).fillna(0).astype(int)
-    areas["market_gap_index"] = (
-        areas["population_density_index"] - areas["restaurant_supply_index"]
-    ).clip(lower=0)
-    return areas
+
+@st.cache_data(ttl=OSM_CACHE_SECONDS, show_spinner=False)
+def fetch_hyderabad_restaurants() -> dict:
+    """Fetch named Hyderabad restaurants from OSM via Overpass; cache for six hours."""
+    south, west, north, east = HYDERABAD_BBOX
+    query = f"""
+    [out:json][timeout:50];
+    (
+      node["amenity"="restaurant"]({south},{west},{north},{east});
+      way["amenity"="restaurant"]({south},{west},{north},{east});
+      relation["amenity"="restaurant"]({south},{west},{north},{east});
+    );
+    out center tags;
+    """
+    headers = {
+        "User-Agent": OSM_USER_AGENT,
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    }
+    try:
+        response = requests.post(OVERPASS_URL, data={"data": query}, headers=headers, timeout=(10, 70))
+        response.raise_for_status()
+        payload = response.json()
+    except requests.Timeout as exc:
+        raise RuntimeError("Overpass timed out. Please retry after a short interval.") from exc
+    except requests.HTTPError as exc:
+        status = exc.response.status_code if exc.response is not None else "unknown"
+        if status in (429, 502, 503, 504):
+            message = f"Overpass is temporarily busy (HTTP {status}). Please retry later."
+        else:
+            message = f"Overpass returned HTTP {status}. Live venue data is unavailable."
+        raise RuntimeError(message) from exc
+    except requests.RequestException as exc:
+        raise RuntimeError("Could not reach Overpass. Check your internet connection and retry.") from exc
+    except ValueError as exc:
+        raise RuntimeError("Overpass returned invalid JSON. Live venue data is unavailable.") from exc
+
+    elements = payload.get("elements")
+    if not isinstance(elements, list):
+        raise RuntimeError("Overpass response did not contain an elements list.")
+
+    records = []
+    for element in elements:
+        tags = element.get("tags") or {}
+        if tags.get("amenity") != "restaurant":
+            continue
+        name = (tags.get("name") or tags.get("brand") or "").strip()
+        if not name:
+            continue
+        center = element.get("center") or {}
+        lat = element.get("lat", center.get("lat"))
+        lon = element.get("lon", center.get("lon"))
+        if lat is None or lon is None:
+            continue
+        try:
+            lat, lon = float(lat), float(lon)
+        except (TypeError, ValueError):
+            continue
+        if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+            continue
+        osm_type, osm_id = str(element.get("type", "")), str(element.get("id", ""))
+        if not osm_type or not osm_id:
+            continue
+        area = (
+            tags.get("addr:suburb")
+            or tags.get("addr:neighbourhood")
+            or tags.get("addr:city_district")
+            or tags.get("addr:district")
+            or tags.get("addr:city")
+            or tags.get("addr:place")
+            or "Area not tagged in OSM"
+        )
+        address_parts = [
+            tags.get("addr:housenumber"),
+            tags.get("addr:street"),
+            tags.get("addr:suburb") or tags.get("addr:neighbourhood"),
+            tags.get("addr:city"),
+        ]
+        address = ", ".join(str(part) for part in address_parts if part) or "Address not tagged in OSM"
+        records.append(
+            {
+                "osm_ref": f"{osm_type}/{osm_id}",
+                "osm_url": f"https://www.openstreetmap.org/{osm_type}/{osm_id}",
+                "name": name,
+                "cuisine": str(tags.get("cuisine", "Not tagged")).replace("_", " ").title(),
+                "area": str(area),
+                "address": address,
+                "lat": lat,
+                "lon": lon,
+                "amenity": "restaurant",
+                "source": "OpenStreetMap via Overpass API",
+            }
+        )
+
+    records.sort(key=lambda item: (item["area"].casefold(), item["name"].casefold()))
+    osm_meta = payload.get("osm3s") or {}
+    return {
+        "records": records,
+        "osm_data_timestamp": osm_meta.get("timestamp_osm_base", "Not supplied by Overpass"),
+        "fetched_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "record_count": len(records),
+        "query_bbox": list(HYDERABAD_BBOX),
+    }
 
 
-def render_map(view: str) -> None:
-    venues = pd.DataFrame(VENUE_FIXTURES)
-    areas = area_summary()
+def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
+    """Render live OSM venue locations and explicitly human-approved complaint markers."""
+    if venues.empty:
+        st.warning("No named OSM restaurants are available. The app does not substitute sample venues.")
+        return
+    center = {"lat": float(venues["lat"].mean()), "lon": float(venues["lon"].mean())}
+    approved = [item for item in reports if item["status"] == "Approved"]
 
-    st.caption(
-        "Map markers use synthetic OSM-style venue fixtures and illustrative area "
-        "indices. The basemap is provided by OpenStreetMap; the displayed venue and "
-        "planning data are not live OSM or official census data."
+    if view == "Citizen View — Approved report locations":
+        fig = px.scatter_mapbox(
+            venues, lat="lat", lon="lon", hover_name="name", color="cuisine",
+            hover_data={"area": True, "address": True, "osm_ref": True, "lat": False, "lon": False},
+            zoom=10, center=center, mapbox_style="carto-positron",
+            title="OpenStreetMap restaurant locations and approved reports",
+        )
+        geolocated = [
+            item for item in approved
+            if item.get("venue_lat") is not None and item.get("venue_lon") is not None
+        ]
+        if geolocated:
+            report_frame = pd.DataFrame(geolocated)
+            fig.add_trace(
+                go.Scattermapbox(
+                    lat=report_frame["venue_lat"], lon=report_frame["venue_lon"],
+                    mode="markers", name="Human-approved reports",
+                    marker={"size": 15, "color": "#dc2626"},
+                    text=report_frame["venue"],
+                    customdata=report_frame[["category", "area"]].to_numpy(),
+                    hovertemplate=(
+                        "<b>Approved report · %{text}</b>"
+                        "<br>Category: %{customdata[0]}"
+                        "<br>Area: %{customdata[1]}<extra></extra>"
+                    ),
+                )
+            )
+        st.plotly_chart(fig, use_container_width=True)
+        st.metric("Human-approved complaints", len(approved))
+        without_location = len(approved) - len(geolocated)
+        if without_location:
+            st.caption(
+                f"{without_location} approved complaint(s) have no selected OSM venue "
+                "and are not assigned invented map coordinates."
+            )
+        if not approved:
+            st.info("No complaints have been approved yet. Pending complaints are never shown.")
+    else:
+        supply = (
+            venues.groupby("area", dropna=False)
+            .agg(listed_restaurants=("osm_ref", "count"), lat=("lat", "mean"), lon=("lon", "mean"))
+            .reset_index()
+            .sort_values("listed_restaurants", ascending=True)
+        )
+        fig = px.scatter_mapbox(
+            supply, lat="lat", lon="lon", size="listed_restaurants",
+            color="listed_restaurants", hover_name="area",
+            hover_data={"listed_restaurants": True, "lat": False, "lon": False},
+            color_continuous_scale="Teal", size_max=34, zoom=10, center=center,
+            mapbox_style="carto-positron",
+            title="Restaurant supply represented in OpenStreetMap",
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        st.dataframe(
+            supply[["area", "listed_restaurants"]].rename(
+                columns={"area": "OSM-tagged area", "listed_restaurants": "Named restaurants"}
+            ),
+            use_container_width=True, hide_index=True,
+        )
+        st.warning(
+            "Population-density data is not connected. This is an OSM restaurant "
+            "supply view, not a validated population-versus-supply market-gap analysis."
+        )
+
+    st.markdown(
+        '[Map data: OpenStreetMap contributors](https://www.openstreetmap.org/copyright) '
+        '· Open Database License (ODbL)'
     )
 
-    if view == "Citizen View — Approved report density":
-        areas["plot_size"] = areas["approved_report_count"].clip(lower=1)
-        fig = px.scatter_mapbox(
-            areas,
-            lat="lat",
-            lon="lon",
-            size="plot_size",
-            color="approved_report_count",
-            hover_name="area",
-            hover_data={"approved_report_count": True, "lat": False, "lon": False, "plot_size": False},
-            color_continuous_scale="Blues",
-            size_max=34,
-            zoom=10,
-            center={"lat": 17.435, "lon": 78.43},
-            mapbox_style="open-street-map",
-            title="Approved citizen reports by area",
-        )
-        fig.update_traces(
-            name="Approved reports",
-            marker={"opacity": 0.82},
-        )
-        fig.add_trace(
-            go.Scattermapbox(
-                lat=venues["lat"],
-                lon=venues["lon"],
-                mode="markers",
-                name="OSM-style venue fixtures",
-                marker={"size": 9, "color": "#0f766e", "opacity": 0.85},
-                text=venues["name"],
-                customdata=venues[["area", "cuisine"]].to_numpy(),
-                hovertemplate=(
-                    "<b>%{text}</b><br>Area: %{customdata[0]}"
-                    "<br>Type: %{customdata[1]}<br>Fixture data<extra></extra>"
-                ),
-            )
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        st.metric(
-            "Approved reports visible",
-            int(areas["approved_report_count"].sum()),
-            help="Only complaints explicitly approved by a human moderator are counted.",
-        )
-        st.info(
-            "Pending and rejected complaints are excluded. With no approved reports, "
-            "areas remain at zero; no report density is invented."
-        )
-    else:
-        fig = px.scatter_mapbox(
-            areas,
-            lat="lat",
-            lon="lon",
-            size="market_gap_index",
-            color="market_gap_index",
-            hover_name="area",
-            hover_data={
-                "population_density_index": True,
-                "restaurant_supply_index": True,
-                "market_gap_index": True,
-                "lat": False,
-                "lon": False,
-            },
-            color_continuous_scale="OrRd",
-            size_max=38,
-            zoom=10,
-            center={"lat": 17.435, "lon": 78.43},
-            mapbox_style="open-street-map",
-            title="Illustrative population-demand / restaurant-supply gap",
-        )
-        fig.add_trace(
-            go.Scattermapbox(
-                lat=venues["lat"],
-                lon=venues["lon"],
-                mode="markers",
-                name="OSM-style venue fixtures",
-                marker={"size": 8, "color": "#2563eb", "opacity": 0.75},
-                text=venues["name"],
-                hovertemplate="<b>%{text}</b><br>Demonstration venue fixture<extra></extra>",
-            )
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        st.caption(
-            "Market-gap index = illustrative population-density index minus "
-            "illustrative restaurant-supply index, clipped at zero. Higher values "
-            "identify candidate areas for further field research—not confirmed "
-            "underserved markets."
-        )
+
 
 
 initialize_session_state()
+
+st.markdown(
+    """
+    <style>
+      .stApp { background: radial-gradient(circle at 12% 0%, #18334a 0, #0b1422 36%, #08111d 100%); }
+      .main .block-container { max-width: 1380px; padding-top: 2.1rem; padding-bottom: 3rem; }
+      [data-testid="stHeader"] { background: rgba(8, 17, 29, 0.72); }
+      [data-testid="stMetric"] { background: #122338; border: 1px solid #27445b; padding: 1rem; border-radius: 14px; }
+      [data-testid="stMetricValue"] { color: #eff6ff; }
+      [data-testid="stMetricLabel"] { color: #a9c0d2; }
+      .stTabs [data-baseweb="tab-list"] { gap: .35rem; border-bottom: 1px solid #294256; }
+      .stTabs [data-baseweb="tab"] { background: #122338; border-radius: 10px 10px 0 0; padding: .65rem 1rem; }
+      .stTabs [aria-selected="true"] { background: #164e63; color: #ecfeff; }
+      div.stButton > button, div.stLinkButton > a, div.stFormSubmitButton > button {
+        border-radius: 10px; border: 1px solid #2b6576; font-weight: 650;
+      }
+      [data-testid="stExpander"] { border: 1px solid #294256; border-radius: 12px; }
+      [data-testid="stAlert"] { border-radius: 12px; }
+      .cs-hero { background: linear-gradient(115deg, #112d42, #123c4a 62%, #173b55);
+        border: 1px solid #2b6474; border-radius: 20px; padding: 1.35rem 1.5rem; margin: .5rem 0 1.1rem; }
+      .cs-eyebrow { color: #7dd3c7; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+      .cs-title { color: #f1f7fb; font-size: 2.15rem; font-weight: 800; line-height: 1.12; margin: .35rem 0; }
+      .cs-subtitle { color: #c3d6e2; font-size: 1rem; margin: 0; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+st.markdown(
+    """
+    <div class="cs-hero">
+      <div class="cs-eyebrow">Civic intelligence · Hyderabad</div>
+      <div class="cs-title">Food safety, made more transparent.</div>
+      <p class="cs-subtitle">Open data for discovery. Human judgment for moderation. Clear provenance at every step.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+with st.sidebar:
+    st.markdown("### Data connection")
+    st.caption("OpenStreetMap · Overpass API")
+    if st.button("Refresh restaurant snapshot", use_container_width=True):
+        fetch_hyderabad_restaurants.clear()
+        st.rerun()
+    st.caption("Automatic cache: 6 hours. Manual refresh is available above.")
+
+osm_snapshot = None
+osm_error = None
+with st.spinner("Loading Hyderabad restaurant records from OpenStreetMap…"):
+    try:
+        osm_snapshot = fetch_hyderabad_restaurants()
+    except RuntimeError as exc:
+        osm_error = str(exc)
+    except Exception:
+        osm_error = "Unexpected data-source error. Live restaurant records are unavailable."
+
+if osm_snapshot is not None:
+    OSM_VENUES = pd.DataFrame(osm_snapshot["records"])
+    if OSM_VENUES.empty:
+        st.warning("Overpass responded successfully, but no named restaurants matched this query.")
+    else:
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Named restaurants", f"{len(OSM_VENUES):,}")
+        m2.metric("OSM-tagged areas", OSM_VENUES["area"].nunique())
+        m3.metric("Data source", "Overpass API")
+    st.caption(
+        f"OSM data timestamp: {osm_snapshot['osm_data_timestamp']} · "
+        f"Fetched (UTC): {osm_snapshot['fetched_at_utc']}"
+    )
+else:
+    OSM_VENUES = pd.DataFrame(
+        columns=["osm_ref", "osm_url", "name", "cuisine", "area", "address", "lat", "lon", "amenity", "source"]
+    )
+    st.error(f"Live OpenStreetMap data is unavailable: {osm_error}")
+    st.info("No sample restaurant fallback is loaded. Retry later or check your connection.")
 
 st.title("🛡️ CivicShield V2")
 st.subheader("Food safety, made more transparent.")
@@ -363,19 +418,12 @@ st.write(
 )
 
 with st.container(border=True):
-    left, right = st.columns([3, 1])
-    with left:
-        st.markdown("**Evidence before claims. Human review before publication.**")
-        st.write(
-            "CivicShield V2 deliberately avoids synthetic food-safety scores and "
-            "unverified claims of official FSSAI integration."
-        )
-    with right:
-        st.link_button("Open official FoSCoS portal", FOOD_SAFETY_PORTAL, use_container_width=True)
+    st.markdown("**Evidence before claims. Human review before publication.**")
     st.caption(
-        "Demo status: synthetic venue fixtures · demonstration NLP model · "
-        "session-only workflow · no official affiliation with FSSAI."
+        "Live venue discovery uses OpenStreetMap records. OSM listings do not certify "
+        "a restaurant's food safety or FSSAI licence status."
     )
+    st.link_button("Open official FoSCoS verification portal", FOOD_SAFETY_PORTAL)
 
 citizen_tab, map_tab, admin_tab, owner_tab = st.tabs(
     ["Citizen Reporting", "Civic Map & Insights", "Admin Moderation", "Owner Portal"]
@@ -392,12 +440,14 @@ with citizen_tab:
         "information. This prototype is not an emergency reporting channel."
     )
 
-    area_options = [item["area"] for item in AREA_FIXTURES]
+    area_options = sorted(OSM_VENUES["area"].dropna().unique().tolist()) if not OSM_VENUES.empty else ["Area not available"]
+    venue_lookup = OSM_VENUES.set_index("name").to_dict(orient="index") if not OSM_VENUES.empty else {}
     with st.form("citizen_complaint_form", clear_on_submit=True):
         selected_area = st.selectbox("Area", area_options)
         selected_venue = st.selectbox(
             "Venue (optional)",
-            ["Not specified"] + [item["name"] for item in VENUE_FIXTURES],
+            ["Not specified"] + (OSM_VENUES["name"].tolist() if not OSM_VENUES.empty else []),
+            help="Only venues returned by the current OpenStreetMap snapshot appear here.",
         )
         complaint_text = st.text_area(
             "What happened?",
@@ -418,6 +468,9 @@ with citizen_tab:
                 "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "area": selected_area,
                 "venue": None if selected_venue == "Not specified" else selected_venue,
+                "venue_lat": venue_lookup.get(selected_venue, {}).get("lat"),
+                "venue_lon": venue_lookup.get(selected_venue, {}).get("lon"),
+                "osm_ref": venue_lookup.get(selected_venue, {}).get("osm_ref"),
                 "text": cleaned_text,
                 "category": category,
                 "confidence": confidence,
@@ -445,43 +498,41 @@ with map_tab:
     selected_view = st.radio(
         "Choose a map view",
         [
-            "Citizen View — Approved report density",
-            "Brand View — Market gap analysis",
+            "Citizen View — Approved report locations",
+            "Brand View — Restaurant supply coverage",
         ],
         horizontal=True,
     )
-    render_map(selected_view)
+    render_map(selected_view, OSM_VENUES, st.session_state.complaints)
 
-    with st.expander("Inspect demonstration venue records"):
-        venue_frame = pd.DataFrame(VENUE_FIXTURES)
-        st.dataframe(
-            venue_frame[["venue_id", "name", "area", "cuisine", "source_label"]],
-            use_container_width=True,
-            hide_index=True,
-        )
-        st.caption(
-            "The venue records are synthetic OSM-style fixtures with illustrative "
-            "OSM tag shapes. They do not have real OSM IDs and were not downloaded "
-            "from OpenStreetMap."
-        )
+    with st.expander("Explore live OpenStreetMap restaurant records"):
+        if OSM_VENUES.empty:
+            st.info("No live records are available in this session.")
+        else:
+            st.dataframe(
+                OSM_VENUES[["name", "cuisine", "area", "address", "osm_ref", "osm_url"]],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "osm_url": st.column_config.LinkColumn("OpenStreetMap record"),
+                    "osm_ref": "OSM object ID",
+                },
+            )
+            st.caption(
+                f"{len(OSM_VENUES):,} named restaurant objects in the cached Overpass response. "
+                "Only mapped and named OSM objects are represented."
+            )
 
-    with st.expander("Inspect area-planning fixture values"):
-        st.dataframe(
-            area_summary()[
-                [
-                    "area",
-                    "population_density_index",
-                    "restaurant_supply_index",
-                    "market_gap_index",
-                    "approved_report_count",
-                ]
-            ],
-            use_container_width=True,
-            hide_index=True,
+    with st.expander("Data coverage and market-gap limitations"):
+        st.write(
+            "The live layer measures restaurant listings recorded in OSM. It does not "
+            "provide population density, footfall, spending power or official business "
+            "completeness. A true market-gap model requires a separately sourced and "
+            "licensed demographic layer."
         )
-        st.caption(
-            "All planning indices are synthetic examples. Replace them with "
-            "documented, licensed sources before using this analysis for decisions."
+        st.markdown(
+            "[OpenStreetMap data and ODbL attribution](https://www.openstreetmap.org/copyright) "
+            "· [Overpass API documentation](https://wiki.openstreetmap.org/wiki/Overpass_API)"
         )
 
 with admin_tab:
@@ -643,7 +694,7 @@ with st.expander("Data provenance, privacy and prototype limitations"):
         f"""
         - **Venue fixtures:** synthetic OSM-style examples, not live OSM records.
         - **Area metrics:** illustrative indices, not official population or market data.
-        - **Map tiles:** OpenStreetMap basemap; attribution: {OSM_COPYRIGHT}.
+        - **Map tiles:** OpenStreetMap basemap; attribution: {OSM_COPYRIGHT_URL}.
         - **FSSAI:** no FSSAI API is called. Use the official FoSCoS portal for manual verification.
         - **NLP:** a small demonstration TF-IDF + Logistic Regression model; not validated for operational or legal decisions.
         - **Moderation:** complaints are private and pending by default; only a human approval makes a complaint visible on the public map.
