@@ -26,10 +26,18 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 try:
-    from v2.osm_data import OSM_CACHE_SECONDS, build_venue_option_lookup, fetch_osm_restaurants
+    from v2.osm_data import (
+        OSM_CACHE_SECONDS,
+        build_venue_option_lookup,
+        fetch_osm_restaurants,
+    )
 except ModuleNotFoundError:
     # Streamlit may put the script directory, rather than repository root, on sys.path.
-    from osm_data import OSM_CACHE_SECONDS, build_venue_option_lookup, fetch_osm_restaurants
+    from osm_data import (
+        OSM_CACHE_SECONDS,
+        build_venue_option_lookup,
+        fetch_osm_restaurants,
+    )
 
 
 st.set_page_config(
@@ -213,7 +221,7 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
             color="listed_restaurants", hover_name="area",
             hover_data={"listed_restaurants": True, "lat": False, "lon": False},
             color_continuous_scale="Teal", size_max=34, zoom=10, center=center,
-            mapbox_style="carto-positron",
+            mapbox_style="open-street-map",
             title="Restaurant supply represented in OpenStreetMap",
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -529,7 +537,7 @@ with admin_tab:
                 ):
                     report["status"] = "Approved"
                     report["review_note"] = note.strip()
-                    report["reviewed_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+                    report["reviewed_at"] = datetime.now(UTC).isoformat(timespec="seconds")
                     st.rerun()
             with reject_col:
                 if st.button(
@@ -539,7 +547,7 @@ with admin_tab:
                 ):
                     report["status"] = "Rejected"
                     report["review_note"] = note.strip()
-                    report["reviewed_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+                    report["reviewed_at"] = datetime.now(UTC).isoformat(timespec="seconds")
                     st.rerun()
 
     st.markdown("#### Moderation history")
@@ -601,7 +609,7 @@ with owner_tab:
                 ):
                     st.session_state.corrective_actions[report["id"]] = {
                         "file_name": uploaded.name,
-                        "recorded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
                     }
                     st.success(
                         f"Recorded {uploaded.name} for this session. "
