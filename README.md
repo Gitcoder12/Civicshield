@@ -5,7 +5,7 @@ An academic civic-technology project exploring how food-safety information, citi
 
 > **Project identity:** M.Tech CSE · Amity University Hyderabad · March–April 2026  
 > **Student authors:** D. Satvik and C. Ajay  
-> **Academic supervisor:** Dr. Ratnjali Tiwari
+> **Academic supervisor:** Dr. Ratnanjali Tiwari
 
 CivicShield began as an academic project and browser demonstration for Hyderabad. Its central idea is to make food-safety information easier to discover, give citizens a structured way to report observations, and provide a workflow through which authorized reviewers can assess and respond to those reports.
 
@@ -45,7 +45,7 @@ V1 is intentionally preserved. V2 does not replace or silently rewrite the V1 in
 
 ## Academic origin and project context
 
-CivicShield was developed as an M.Tech CSE academic project at Amity University Hyderabad by D. Satvik and C. Ajay under the guidance of Dr. Ratnjali Tiwari. The project was also presented in the university's World Creativity and Innovation Day 2026 activity.
+CivicShield was developed as an M.Tech CSE academic project at Amity University Hyderabad by D. Satvik and C. Ajay under the guidance of Dr. Ratnanjali Tiwari. The project was also presented in the university's World Creativity and Innovation Day 2026 activity.
 
 The original academic framing identified three connected challenges:
 
@@ -137,7 +137,7 @@ The application opens in the local Streamlit browser session. The interactive Op
 
 ## Engineering maturity & data provenance pivot
 
-During the transition from the original concept to V2, we separated the desired product capability from what could be responsibly verified through available integrations.
+During the transition from the original concept to V2, we separated the desired product capability from what could be responsibly verified through available integrations. The team could not establish a documented, supported public API suitable for automatic FSSAI license verification in this prototype; therefore, V2 does not pretend to perform a live government lookup.
 
 **No public FSSAI/FoSCoS API integration is implemented in this prototype.** We therefore do not claim that CivicShield performs automatic, live license verification. The application links users to the official [FoSCoS portal](https://foscos.fssai.gov.in/) for manual verification.
 

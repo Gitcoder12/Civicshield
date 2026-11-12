@@ -261,7 +261,6 @@ def render_map(view: str) -> None:
         fig.update_traces(
             name="Approved reports",
             marker={"opacity": 0.82},
-            hovertemplate="<b>%{hovertext}</b><br>Approved reports: %{marker.size}<extra></extra>",
         )
         fig.add_trace(
             go.Scattermapbox(
