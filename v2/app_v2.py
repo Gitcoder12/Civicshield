@@ -692,9 +692,11 @@ st.divider()
 with st.expander("Data provenance, privacy and prototype limitations"):
     st.markdown(
         f"""
-        - **Venue fixtures:** synthetic OSM-style examples, not live OSM records.
-        - **Area metrics:** illustrative indices, not official population or market data.
-        - **Map tiles:** OpenStreetMap basemap; attribution: {OSM_COPYRIGHT_URL}.
+        - **Venue data:** named restaurant objects fetched from OpenStreetMap through Overpass; cached for six hours.
+        - **Coverage:** only named restaurant objects with valid coordinates inside the query bounding box are shown; OSM completeness is not guaranteed.
+        - **Area labels:** derived from OSM address tags and may be missing or broad.
+        - **Map data licence:** OpenStreetMap contributors, ODbL; [copyright and attribution details]({OSM_COPYRIGHT_URL}).
+        - **Demographics:** no population-density dataset is integrated; Brand View shows OSM restaurant supply only.
         - **FSSAI:** no FSSAI API is called. Use the official FoSCoS portal for manual verification.
         - **NLP:** a small demonstration TF-IDF + Logistic Regression model; not validated for operational or legal decisions.
         - **Moderation:** complaints are private and pending by default; only a human approval makes a complaint visible on the public map.

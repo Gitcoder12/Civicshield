@@ -267,6 +267,7 @@ The current V2 application is a local demonstration, not a production SaaS servi
 | Persistent database | Not implemented |
 | Authentication / RBAC | Not implemented |
 | Population-density market-gap layer | Not integrated; no fabricated demand values |
+| Population-density market-gap layer | Not integrated; no fabricated demand values |
 | Production deployment | Not established |
 
 Streamlit session state can be lost when a session expires, restarts or is otherwise reset. Do not use this build to submit real sensitive complaints or upload confidential evidence.
