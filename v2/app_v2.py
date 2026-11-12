@@ -18,13 +18,18 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import pandas as pd
-import requests
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
+
+try:
+    from v2.osm_data import HYDERABAD_BBOX, OSM_CACHE_SECONDS, fetch_osm_restaurants
+except ModuleNotFoundError:
+    # Streamlit may put the script directory, rather than repository root, on sys.path.
+    from osm_data import HYDERABAD_BBOX, OSM_CACHE_SECONDS, fetch_osm_restaurants
 
 
 st.set_page_config(
@@ -37,10 +42,6 @@ st.set_page_config(
 APP_VERSION = "2.1.0-osm"
 FOOD_SAFETY_PORTAL = "https://foscos.fssai.gov.in/"
 OSM_COPYRIGHT_URL = "https://www.openstreetmap.org/copyright"
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
-HYDERABAD_BBOX = (17.20, 78.30, 17.55, 78.62)
-OSM_CACHE_SECONDS = 6 * 60 * 60
-OSM_USER_AGENT = "CivicShield/2.1 (https://github.com/Gitcoder12/Civicshield)"
 
 # Small, hand-written teaching corpus. This is not a validated or production
 # training dataset. It exists to demonstrate the triage workflow end-to-end.
@@ -151,106 +152,8 @@ def priority_for(category: str, confidence: float, complaint_text: str) -> str:
 
 @st.cache_data(ttl=OSM_CACHE_SECONDS, show_spinner=False)
 def fetch_hyderabad_restaurants() -> dict:
-    """Fetch named Hyderabad restaurants from OSM via Overpass; cache for six hours."""
-    south, west, north, east = HYDERABAD_BBOX
-    query = f"""
-    [out:json][timeout:50];
-    (
-      node["amenity"="restaurant"]({south},{west},{north},{east});
-      way["amenity"="restaurant"]({south},{west},{north},{east});
-      relation["amenity"="restaurant"]({south},{west},{north},{east});
-    );
-    out center tags;
-    """
-    headers = {
-        "User-Agent": OSM_USER_AGENT,
-        "Accept": "application/json",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    }
-    try:
-        response = requests.post(OVERPASS_URL, data={"data": query}, headers=headers, timeout=(10, 70))
-        response.raise_for_status()
-        payload = response.json()
-    except requests.Timeout as exc:
-        raise RuntimeError("Overpass timed out. Please retry after a short interval.") from exc
-    except requests.HTTPError as exc:
-        status = exc.response.status_code if exc.response is not None else "unknown"
-        if status in (429, 502, 503, 504):
-            message = f"Overpass is temporarily busy (HTTP {status}). Please retry later."
-        else:
-            message = f"Overpass returned HTTP {status}. Live venue data is unavailable."
-        raise RuntimeError(message) from exc
-    except requests.RequestException as exc:
-        raise RuntimeError("Could not reach Overpass. Check your internet connection and retry.") from exc
-    except ValueError as exc:
-        raise RuntimeError("Overpass returned invalid JSON. Live venue data is unavailable.") from exc
-
-    elements = payload.get("elements")
-    if not isinstance(elements, list):
-        raise RuntimeError("Overpass response did not contain an elements list.")
-
-    records = []
-    for element in elements:
-        tags = element.get("tags") or {}
-        if tags.get("amenity") != "restaurant":
-            continue
-        name = (tags.get("name") or tags.get("brand") or "").strip()
-        if not name:
-            continue
-        center = element.get("center") or {}
-        lat = element.get("lat", center.get("lat"))
-        lon = element.get("lon", center.get("lon"))
-        if lat is None or lon is None:
-            continue
-        try:
-            lat, lon = float(lat), float(lon)
-        except (TypeError, ValueError):
-            continue
-        if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-            continue
-        osm_type, osm_id = str(element.get("type", "")), str(element.get("id", ""))
-        if not osm_type or not osm_id:
-            continue
-        area = (
-            tags.get("addr:suburb")
-            or tags.get("addr:neighbourhood")
-            or tags.get("addr:city_district")
-            or tags.get("addr:district")
-            or tags.get("addr:city")
-            or tags.get("addr:place")
-            or "Area not tagged in OSM"
-        )
-        address_parts = [
-            tags.get("addr:housenumber"),
-            tags.get("addr:street"),
-            tags.get("addr:suburb") or tags.get("addr:neighbourhood"),
-            tags.get("addr:city"),
-        ]
-        address = ", ".join(str(part) for part in address_parts if part) or "Address not tagged in OSM"
-        records.append(
-            {
-                "osm_ref": f"{osm_type}/{osm_id}",
-                "osm_url": f"https://www.openstreetmap.org/{osm_type}/{osm_id}",
-                "name": name,
-                "cuisine": str(tags.get("cuisine", "Not tagged")).replace("_", " ").title(),
-                "area": str(area),
-                "address": address,
-                "lat": lat,
-                "lon": lon,
-                "amenity": "restaurant",
-                "source": "OpenStreetMap via Overpass API",
-            }
-        )
-
-    records.sort(key=lambda item: (item["area"].casefold(), item["name"].casefold()))
-    osm_meta = payload.get("osm3s") or {}
-    return {
-        "records": records,
-        "osm_data_timestamp": osm_meta.get("timestamp_osm_base", "Not supplied by Overpass"),
-        "fetched_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "record_count": len(records),
-        "query_bbox": list(HYDERABAD_BBOX),
-    }
+    """Fetch and cache parsed OSM data; keep network and parsing logic testable."""
+    return fetch_osm_restaurants()
 
 
 def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
@@ -440,14 +343,27 @@ with citizen_tab:
         "information. This prototype is not an emergency reporting channel."
     )
 
-    area_options = sorted(OSM_VENUES["area"].dropna().unique().tolist()) if not OSM_VENUES.empty else ["Area not available"]
-    venue_lookup = OSM_VENUES.set_index("name").to_dict(orient="index") if not OSM_VENUES.empty else {}
+    area_options = (
+        sorted(OSM_VENUES["area"].dropna().unique().tolist())
+        if not OSM_VENUES.empty
+        else ["Area not available"]
+    )
+    venue_lookup = {}
+    if not OSM_VENUES.empty:
+        for venue_record in OSM_VENUES.to_dict(orient="records"):
+            # OSM can contain multiple businesses with the same name.
+            # Include the stable OSM reference in the visible option to disambiguate.
+            venue_label = (
+                f"{venue_record['name']} — {venue_record['area']} "
+                f"[{venue_record['osm_ref']}]"
+            )
+            venue_lookup[venue_label] = venue_record
     with st.form("citizen_complaint_form", clear_on_submit=True):
         selected_area = st.selectbox("Area", area_options)
         selected_venue = st.selectbox(
             "Venue (optional)",
-            ["Not specified"] + (OSM_VENUES["name"].tolist() if not OSM_VENUES.empty else []),
-            help="Only venues returned by the current OpenStreetMap snapshot appear here.",
+            ["Not specified"] + list(venue_lookup),
+            help="Only venues returned by the current OpenStreetMap snapshot appear here. Duplicate names are disambiguated by area and OSM ID.",
         )
         complaint_text = st.text_area(
             "What happened?",
@@ -467,7 +383,7 @@ with citizen_tab:
                 "id": str(uuid4()),
                 "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "area": selected_area,
-                "venue": None if selected_venue == "Not specified" else selected_venue,
+                "venue": venue_lookup.get(selected_venue, {}).get("name"),
                 "venue_lat": venue_lookup.get(selected_venue, {}).get("lat"),
                 "venue_lon": venue_lookup.get(selected_venue, {}).get("lon"),
                 "osm_ref": venue_lookup.get(selected_venue, {}).get("osm_ref"),

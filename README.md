@@ -41,7 +41,7 @@ V1 is intentionally preserved. V2 does not replace or silently rewrite the V1 in
 - [Official FoSCoS portal](https://foscos.fssai.gov.in/)
 - [OpenStreetMap](https://www.openstreetmap.org/)
 
-**V2 source:** `v2/app_v2.py` on the `v2-ultra-cooked` development branch.
+**V2 source:** `v2/app_v2.py` on the `v2-ultra-cooked` development branch; Overpass parsing is isolated in `v2/osm_data.py`.
 
 ## Academic origin and project context
 
@@ -268,10 +268,23 @@ The current V2 application is a local demonstration, not a production SaaS servi
 | Persistent database | Not implemented |
 | Authentication / RBAC | Not implemented |
 | Population-density market-gap layer | Not integrated; no fabricated demand values |
-| Population-density market-gap layer | Not integrated; no fabricated demand values |
 | Production deployment | Not established |
 
 Streamlit session state can be lost when a session expires, restarts or is otherwise reset. Do not use this build to submit real sensitive complaints or upload confidential evidence.
+
+## Automated quality checks
+
+The V2 branch includes unit tests for Overpass query construction, OSM node/way/relation parsing, duplicate business names, invalid and out-of-bounds records, source timestamps, and API rate-limit handling. GitHub Actions runs Ruff lint/format checks, Python compilation and tests on Python 3.11, 3.12 and 3.13.
+
+Run the checks locally:
+
+```bash
+pip install -r requirements-dev.txt
+ruff check v2 tests
+ruff format --check v2 tests
+python -m compileall -q v2 tests
+pytest -q
+```
 
 ## Production-readiness roadmap
 
