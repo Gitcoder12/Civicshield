@@ -210,27 +210,55 @@ def render_map(view: str, venues: pd.DataFrame, reports: list[dict]) -> None:
         if not approved:
             st.info("No complaints have been approved yet. Pending complaints are never shown.")
     else:
-        supply = (
-            venues.groupby("area", dropna=False)
-            .agg(listed_restaurants=("osm_ref", "count"), lat=("lat", "mean"), lon=("lon", "mean"))
-            .reset_index()
-            .sort_values("listed_restaurants", ascending=True)
-        )
-        fig = px.scatter_map(
-            supply, lat="lat", lon="lon", size="listed_restaurants",
-            color="listed_restaurants", hover_name="area",
-            hover_data={"listed_restaurants": True, "lat": False, "lon": False},
-            color_continuous_scale="Teal", size_max=34, zoom=10, center=center,
-            map_style="open-street-map",
-            title="Restaurant supply represented in OpenStreetMap",
-        )
-        st.plotly_chart(fig, width="stretch")
-        st.dataframe(
-            supply[["area", "listed_restaurants"]].rename(
-                columns={"area": "OSM-tagged area", "listed_restaurants": "Named restaurants"}
-            ),
-            width="stretch", hide_index=True,
-        )
+        untagged_count = int((venues["area"] == "Area not tagged in OSM").sum())
+        tagged_venues = venues[venues["area"] != "Area not tagged in OSM"]
+        if tagged_venues.empty:
+            st.info(
+                "OSM returned restaurants, but none had an address-area tag. "
+                "There is not enough area information to build an area-level supply map."
+            )
+        else:
+            supply = (
+                tagged_venues.groupby("area", dropna=False)
+                .agg(
+                    listed_restaurants=("osm_ref", "count"),
+                    lat=("lat", "mean"),
+                    lon=("lon", "mean"),
+                )
+                .reset_index()
+                .sort_values("listed_restaurants", ascending=True)
+            )
+            fig = px.scatter_map(
+                supply,
+                lat="lat",
+                lon="lon",
+                size="listed_restaurants",
+                color="listed_restaurants",
+                hover_name="area",
+                hover_data={"listed_restaurants": True, "lat": False, "lon": False},
+                color_continuous_scale="Teal",
+                size_max=34,
+                zoom=10,
+                center=center,
+                map_style="open-street-map",
+                title="Restaurant supply represented in OpenStreetMap",
+            )
+            st.plotly_chart(fig, width="stretch")
+            st.dataframe(
+                supply[["area", "listed_restaurants"]].rename(
+                    columns={
+                        "area": "OSM-tagged area",
+                        "listed_restaurants": "Named restaurants",
+                    }
+                ),
+                width="stretch",
+                hide_index=True,
+            )
+        if untagged_count:
+            st.caption(
+                f"{untagged_count:,} named restaurant(s) have no area tag in OSM "
+                "and are excluded from area-level aggregation."
+            )
         st.warning(
             "Population-density data is not connected. This is an OSM restaurant "
             "supply view, not a validated population-versus-supply market-gap analysis."
@@ -357,6 +385,10 @@ with citizen_tab:
     venue_lookup = build_venue_option_lookup(
         OSM_VENUES.to_dict(orient="records") if not OSM_VENUES.empty else []
     )
+    st.caption(
+        "When you select an OSM venue, its tagged area is used for report placement. "
+        "The area selector is a fallback when no venue is selected or the venue has no area tag."
+    )
     with st.form("citizen_complaint_form", clear_on_submit=True):
         selected_area = st.selectbox("Area", area_options)
         selected_venue = st.selectbox(
@@ -378,14 +410,21 @@ with citizen_tab:
             st.error("Please provide a little more detail (at least 8 characters).")
         else:
             category, confidence = classify_complaint(cleaned_text)
+            selected_venue_record = venue_lookup.get(selected_venue, {})
+            tagged_venue_area = selected_venue_record.get("area")
+            report_area = (
+                tagged_venue_area
+                if tagged_venue_area and tagged_venue_area != "Area not tagged in OSM"
+                else selected_area
+            )
             complaint = {
                 "id": str(uuid4()),
                 "created_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                "area": selected_area,
-                "venue": venue_lookup.get(selected_venue, {}).get("name"),
-                "venue_lat": venue_lookup.get(selected_venue, {}).get("lat"),
-                "venue_lon": venue_lookup.get(selected_venue, {}).get("lon"),
-                "osm_ref": venue_lookup.get(selected_venue, {}).get("osm_ref"),
+                "area": report_area,
+                "venue": selected_venue_record.get("name"),
+                "venue_lat": selected_venue_record.get("lat"),
+                "venue_lon": selected_venue_record.get("lon"),
+                "osm_ref": selected_venue_record.get("osm_ref"),
                 "text": cleaned_text,
                 "category": category,
                 "confidence": confidence,

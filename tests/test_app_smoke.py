@@ -80,11 +80,20 @@ def test_streamlit_app_submit_approve_and_reject_flow(monkeypatch):
     assert app.session_state["complaints"][0]["status"] == "Approved"
     assert not app.exception
 
+    # Deliberately choose a UI area that conflicts with the selected venue's OSM tag.
+    # The saved report must use the OSM venue's tagged area for correct map placement.
+    area_selector = next(item for item in app.selectbox if item.label == "Area")
+    venue_selector = next(item for item in app.selectbox if item.label == "Venue (optional)")
+    area_selector.select("Madhapur")
+    gachibowli_option = next(option for option in venue_selector.options if "[node/502]" in option)
+    venue_selector.select(gachibowli_option)
     app.text_area[0].set_value("The waiter looked at me funny")
     submit_button = next(item for item in app.button if item.label == "Submit for human review")
     submit_button.click().run()
     assert len(app.session_state["complaints"]) == 2
     assert app.session_state["complaints"][1]["status"] == "Pending"
+    assert app.session_state["complaints"][1]["area"] == "Gachibowli"
+    assert app.session_state["complaints"][1]["osm_ref"] == "node/502"
 
     reject_button = next(item for item in app.button if item.label == "Reject")
     reject_button.click().run()
