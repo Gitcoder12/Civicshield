@@ -24,4 +24,5 @@
 - Run the new CI workflow after the workflow file is present on the default branch, or execute the test suite in an environment with requirements-dev.txt installed.
 - The browser demo still stores reports in memory; only the optional Flask API persists unverified reports.
 - The demo has no authentication, official FSSAI lookup, production database, rate limiting, or real inspection data.
+- Latest code commit: `a9309677b033131e9af6a59da39e8a87c2331bbd`.
 - Review the front-end JavaScript changes in a browser before treating the UI as release-ready.
