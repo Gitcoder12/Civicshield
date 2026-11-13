@@ -104,7 +104,11 @@ def save_reports(data: list[dict[str, Any]]) -> None:
 
 def calculate_score(base_score: int, checklist: dict[str, bool]) -> int:
     """Return an illustrative community signal; never treat it as an official score."""
-    if isinstance(base_score, bool) or not isinstance(base_score, int) or not 0 <= base_score <= 100:
+    if (
+        isinstance(base_score, bool)
+        or not isinstance(base_score, int)
+        or not 0 <= base_score <= 100
+    ):
         raise ValueError("base_score must be an integer from 0 to 100")
     deductions = 0
     for key, value in checklist.items():
@@ -205,7 +209,12 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
         mode = data.get("mode", "customer")
         if mode != "customer":
-            return jsonify({"error": "Inspector submissions require an authenticated authority account"}), 403
+            return (
+                jsonify(
+                    {"error": "Inspector submissions require an authenticated authority account"}
+                ),
+                403,
+            )
 
         try:
             checklist = _validate_checklist(data.get("checklist", {}))
