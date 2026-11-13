@@ -20,3 +20,14 @@ Record failed runs, regressions, reverted work and manual checks. Distinguish lo
 ## Current known limitations
 
 The current product is a demonstration using bundled sample records. Treat food-safety indicators as illustrative until their provenance, update cadence and verification authority are implemented.
+
+
+## Additional verified security branch — 2026-11-13
+
+**[PR #1: security/backend-hardening](https://github.com/Gitcoder12/Civicshield/pull/1)** was closed without merging at 2026-11-13 14:05:27 UTC. Its branch remains available at `security/backend-hardening` with head `10c136501e75ae1bc078845b97e2d42b4be25991`. The closed PR did not change the default branch.
+
+The proposed branch replaces fabricated official-looking venue details with synthetic placeholders, labels scores and inspection fields as demo data, escapes user-supplied content, keeps community reports unverified, prevents reports from changing venue records, rejects unauthenticated inspector submissions, validates JSON payloads, writes local reports atomically, restricts CORS and binds the Flask API to loopback by default. It also adds regression tests and a CI workflow.
+
+**Validation status at the recorded PR head:** all three backend CI jobs failed (Python 3.11, 3.12 and 3.13). The author stated that the local environment could not run the tests because Flask/Flask-CORS were unavailable. The PR body does not claim a passing test result. The Codex review comment said it found no major issues, but that review does not replace passing CI or browser verification.
+
+**Preservation note:** the security PR branch has not been deleted or rewritten by this documentation change. The documentation PR only updates the activity record; it does not restore or remove product features, change venue data, or merge the security branch.
