@@ -62,10 +62,10 @@ See [LICENSE](LICENSE).
 
 ### In plain language
 
-See the project overview above for the user-facing explanation.
+CivicShield is a demonstration of how people could browse example food-safety information about local venues and submit a community observation. The venue names and scores in the demo are examples, not official inspection results. A community report is an unverified observation, not proof that a business broke a rule.
 
 ### Technical and research view
 
-Static HTML/CSS/JavaScript frontend, JSON sample data and an optional Flask API. The README documents /hotels routing and backend startup. The project must distinguish supplied sample records from verified authority data.
+The project combines a static HTML/CSS/JavaScript interface, JSON sample venue records and an optional Flask API. The API exposes venue lookup and community-report routes. The design must keep synthetic records, unverified community submissions and any future authenticated authority records separate. User-provided text is untrusted input and must be escaped before rendering. Community reports must not mutate official-looking scores, licence fields or inspection records.
 
 The original feature list, setup instructions and limitations above remain authoritative. For future work, see [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
