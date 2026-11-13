@@ -57,3 +57,15 @@ See [LICENSE](LICENSE).
 - [Agent instructions](AGENTS.md)
 - [Agent skills](SKILLS.md)
 - [Contributing](CONTRIBUTING.md)
+
+## Understanding the project
+
+### In plain language
+
+See the project overview above for the user-facing explanation.
+
+### Technical and research view
+
+Static HTML/CSS/JavaScript frontend, JSON sample data and an optional Flask API. The README documents /hotels routing and backend startup. The project must distinguish supplied sample records from verified authority data.
+
+The original feature list, setup instructions and limitations above remain authoritative. For future work, see [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
