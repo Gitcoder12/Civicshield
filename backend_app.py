@@ -39,6 +39,8 @@ CHECKLIST_DEDUCTIONS = {
     "waste_disposal": 8,
     "water_quality": 10,
     "pest_control_fail": 12,
+    "foreign_object": 15,
+    "food_poisoning": 20,
 }
 NEGATIVE_CHECKS = {
     "clean_dining_area",
