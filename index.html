@@ -572,7 +572,7 @@ function showDetail(id){
     const isI=r.role==='inspector';
     return `<div class="rep-row">
       <div class="rep-av ${isI?'insp':'cust'}">${isI?initials(r.inspName||'IN'):'?'}</div>
-      <div style="flex:1;min-width:0"><div class="rep-who">${isI?'Unverified Demo Entry':'Anonymous Citizen'}</div>${isI?`<div style="font-size:.66rem;color:var(--txt3)">Self-reported: ${escapeHtml(r.inspName||'name not provided')} · ID: ${escapeHtml(r.inspId||'not provided')} · not authenticated</div>`:''}<div class="rep-note">${escapeHtml(r.note||'No additional notes.')}</div></div>
+      <div style="flex:1;min-width:0"><div class="rep-who">${isI?'Unverified Demo Entry':'Anonymous Citizen'}</div>${isI?`<div style="font-size:.66rem;color:var(--txt3)">Self-reported: ${escapeHtml(r.inspName||'name not provided')} · ID: ${escapeHtml(r.inspId||'not provided')} · not authenticated</div>`:''}<div class="rep-note">${r.adulterationReported?'<div class="tag t-ad">Community allegation — unverified</div>':''}<div class="rep-note">${escapeHtml(r.note||'No additional notes.')}</div></div>
       <div class="rep-date">${r.date}</div>
     </div>`;
   }).join(''):'<div style="padding:.6rem 0;font-size:.8rem;color:var(--txt3);font-weight:400;">No community reports yet.</div>';
