@@ -25,9 +25,9 @@ jobs:
       - name: Install backend and test dependencies
         run: python -m pip install -r requirements-dev.txt
       - name: Lint
-        run: ruff check backend_app.py tests
+        run: ruff check backend_app.py tests scripts
       - name: Check formatting
-        run: ruff format --check backend_app.py tests
+        run: ruff format --check backend_app.py tests scripts
       - name: Check browser JavaScript syntax
         run: |
           python scripts/extract_inline_js.py
