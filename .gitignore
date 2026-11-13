@@ -5,3 +5,14 @@
 __pycache__/
 *.pyc
 node_modules/
+
+# Python and local development
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Local report data and atomic-write temporary files
+reports.json
+.reports.json.*.tmp
