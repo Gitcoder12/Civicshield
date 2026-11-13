@@ -145,7 +145,6 @@ def test_calculate_score_is_bounded_and_validates_base_score() -> None:
         backend_app.calculate_score(101, {})
 
 
-
 def test_cors_allows_local_demo_origin_but_not_arbitrary_origins(client: Any) -> None:
     test_client, _, _ = client
     allowed = test_client.get(
@@ -155,5 +154,7 @@ def test_cors_allows_local_demo_origin_but_not_arbitrary_origins(client: Any) ->
         "/health", headers={"Origin": "https://attacker.example"}
     )
 
-    assert allowed.headers.get("Access-Control-Allow-Origin") == "http://localhost:5000"
+    assert (
+        allowed.headers.get("Access-Control-Allow-Origin") == "http://localhost:5000"
+    )
     assert "Access-Control-Allow-Origin" not in rejected.headers
