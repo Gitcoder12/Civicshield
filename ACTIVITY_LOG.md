@@ -31,3 +31,12 @@ The proposed branch replaces fabricated official-looking venue details with synt
 **Validation status at the recorded PR head:** all three backend CI jobs failed (Python 3.11, 3.12 and 3.13). The author stated that the local environment could not run the tests because Flask/Flask-CORS were unavailable. The PR body does not claim a passing test result. The Codex review comment said it found no major issues, but that review does not replace passing CI or browser verification.
 
 **Preservation note:** the security PR branch has not been deleted or rewritten by this documentation change. The documentation PR only updates the activity record; it does not restore or remove product features, change venue data, or merge the security branch.
+
+## Portfolio documentation rollout — 2026-11-13
+
+- Documentation PR: https://github.com/Gitcoder12/Civicshield/pull/4
+- Added project-specific activity log, prioritised feature plan, company-fit map, beginner/technical README guide and README quality checklist.
+- Added or preserved contribution instructions and bounded agent/skills guidance as shown in the PR diff.
+- Added a two-level explanation to the README: a plain-language overview and a technical/research view. Existing setup instructions and core feature descriptions were retained.
+- Validation: documentation/source review only. No application runtime test or deployment is claimed by this documentation PR.
+- Status: draft PR, not merged.
