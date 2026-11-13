@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import gettempdir
 
 html = Path("index.html").read_text(encoding="utf-8")
-scripts = re.findall(r"<script\\b[^>]*>(.*?)</script>", html, flags=re.IGNORECASE | re.DOTALL)
+scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", html, flags=re.IGNORECASE | re.DOTALL)
 if len(scripts) != 1:
     raise SystemExit(f"Expected one inline application script, found {len(scripts)}")
 
