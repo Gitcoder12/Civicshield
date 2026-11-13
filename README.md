@@ -53,3 +53,7 @@ See [LICENSE](LICENSE).
 - [Agent instructions](AGENTS.md)
 - [Agent skills](SKILLS.md)
 - [Contributing](CONTRIBUTING.md)
+
+- [Agent instructions](AGENTS.md)
+- [Agent skills](SKILLS.md)
+- [Contributing](CONTRIBUTING.md)
