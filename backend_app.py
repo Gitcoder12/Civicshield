@@ -15,10 +15,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 HOTELS_FILE = BASE_DIR / "hotels.json"
 REPORTS_FILE = BASE_DIR / "reports.json"
 _STORAGE_LOCK = threading.RLock()
