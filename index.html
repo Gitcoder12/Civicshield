@@ -218,14 +218,14 @@ textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 
 <div id="pg-home" class="page active">
 <div class="wrap">
   <div class="hero">
-    <div class="hero-badge"><div class="hbd"></div><span>Live — Hyderabad Region</span></div>
+    <div class="hero-badge"><div class="hbd"></div><span>Synthetic Demo — Hyderabad Areas</span></div>
     <h1>Food safety,<br><em>made public.</em></h1>
     <p>Citizen reports, FSSAI verification, official inspector audits and dish recommendations for restaurants across Hyderabad.</p>
     <div class="hero-stats">
       <div><div class="stat-n" id="sTot">0</div><div class="stat-l">Venues Listed</div></div>
-      <div><div class="stat-n"><em id="sGood">0</em></div><div class="stat-l">Good Standing</div></div>
-      <div><div class="stat-n"><em id="sFssai">0</em></div><div class="stat-l">FSSAI Verified</div></div>
-      <div><div class="stat-n"><em id="sRisk">0</em></div><div class="stat-l">High Risk</div></div>
+      <div><div class="stat-n"><em id="sGood">0</em></div><div class="stat-l">Higher Demo Score</div></div>
+      <div><div class="stat-n"><em id="sFssai">0</em></div><div class="stat-l">Verified License Records</div></div>
+      <div><div class="stat-n"><em id="sRisk">0</em></div><div class="stat-l">Lower Demo Score</div></div>
     </div>
   </div>
 
@@ -233,7 +233,7 @@ textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 
   <div class="heatmap-section">
     <div class="heatmap-toggle" id="hmToggle" onclick="toggleHeatmap()">
       <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      Area Safety Map — click to filter
+      Area Demo Overview — click to filter
     </div>
     <div class="heatmap-grid" id="hmGrid"></div>
   </div>
@@ -248,9 +248,7 @@ textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 
     </select>
     <select class="cs" id="licFilter" onchange="renderGrid()">
       <option value="">All Licenses</option>
-      <option value="Valid">FSSAI Valid</option>
-      <option value="Expired">FSSAI Expired</option>
-      <option value="Not Registered">Not Registered</option>
+      <option value="Unverified demo">Demo — not verified</option>
     </select>
     <select class="cs" id="sortSel" onchange="renderGrid()">
       <option value="">Default</option>
@@ -263,9 +261,9 @@ textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 
   <div class="quick-filters" id="quickFilters">
     <span class="qf" onclick="setQF(this,'')">All</span>
     <span class="qf" onclick="setQF(this,'healthy')">✓ Healthy Options</span>
-    <span class="qf" onclick="setQF(this,'fssai')">FSSAI Verified</span>
-    <span class="qf" onclick="setQF(this,'good')">Score 80+</span>
-    <span class="qf" onclick="setQF(this,'risk')">High Risk</span>
+    <span class="qf" onclick="setQF(this,'fssai')">Unverified Demo Records</span>
+    <span class="qf" onclick="setQF(this,'good')">Demo Score 80+</span>
+    <span class="qf" onclick="setQF(this,'risk')">Low Demo Score</span>
   </div>
   <div class="legend">
     <span><span class="ldot" style="background:#2E7D32"></span>80–100 Good</span>
@@ -374,7 +372,7 @@ let currentHotel = null, currentRole = 'customer';
 let activeArea = '', activeQF = '';
 
 function sc(s){return s>=80?'sg':s>=60?'sy':'sr';}
-function sl(s){return s>=80?'Good':s>=60?'Caution':'Risk';}
+function sl(s){return s>=80?'High demo':s>=60?'Mid demo':'Low demo';}
 function bc(s){return s>=80?'#2E7D32':s>=60?'#B45309':'#C62828';}
 function fssaiTag(h){
   if(h.fs==='Unverified demo') return `<span class="tag t-n">Demo — license not verified</span>`;
@@ -451,7 +449,7 @@ function renderGrid(){
     const lm=!lic||h.fs===lic;
     let qf=true;
     if(activeQF==='healthy') qf=h.dishes&&h.dishes.some(d=>d.t==='healthy');
-    if(activeQF==='fssai') qf=h.fs==='Valid';
+    if(activeQF==='fssai') qf=h.fs==='Unverified demo';
     if(activeQF==='good') qf=h.score>=80;
     if(activeQF==='risk') qf=h.score<60;
     return dm&&am&&tm&&lm&&qf;
