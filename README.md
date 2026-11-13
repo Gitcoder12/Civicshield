@@ -49,3 +49,7 @@ This is a project demonstration, not an official FSSAI service. Bundled license 
 ## License
 
 See [LICENSE](LICENSE).
+
+- [Agent instructions](AGENTS.md)
+- [Agent skills](SKILLS.md)
+- [Contributing](CONTRIBUTING.md)
