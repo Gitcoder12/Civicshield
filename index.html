@@ -646,19 +646,25 @@ function submitReport(){
   const note=document.getElementById('repNotes').value.trim();
   const date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
   const rid='CS-'+Date.now().toString(36).toUpperCase();
+  let inspName='';
+  let inspId='';
   if(currentRole==='inspector'){
-    const nm=document.getElementById('inspName').value.trim();
-    const iid=document.getElementById('inspId').value.trim();
-    if(!nm||!iid){alert('Inspector name and FSSAI ID are required.');return;}
+    inspName=document.getElementById('inspName').value.trim();
+    inspId=document.getElementById('inspId').value.trim();
+    if(!inspName||!inspId){alert('A demo name and self-reported ID are required.');return;}
   }
   if(currentHotel){
-    const adult=currentRole==='customer'&&document.getElementById('cc7')?.checked;
-    if(adult)currentHotel.adult=true;
-    const entry={id:rid,role:currentRole,date,note};
-    if(currentRole==='inspector'){
-      entry.inspName=document.getElementById('inspName').value.trim();
-      entry.inspId=document.getElementById('inspId').value.trim();
-    }
+    const adulterationReported=currentRole==='customer'&&document.getElementById('cc7')?.checked;
+    const entry={
+      id:rid,
+      role:currentRole,
+      date,
+      note,
+      inspName,
+      inspId,
+      adulterationReported:!!adulterationReported,
+      verified:false
+    };
     REPORTS[currentHotel.id].push(entry);
     renderGrid();
   }
