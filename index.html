@@ -326,7 +326,7 @@ textarea:focus,.finp:focus,.fsel:focus{border-color:var(--red);box-shadow:0 0 0 
       <div class="insp-official-box">
         <div style="font-size:.72rem;font-weight:600;color:#1D4ED8;letter-spacing:.5px;text-transform:uppercase;font-family:'Syne',sans-serif;margin-bottom:.55rem;">Self-Reported Demo Details — Not Verified</div>
         <div class="frow"><label class="flbl">Full Name *</label><input class="finp" id="inspName" type="text" placeholder="e.g. Dr. Anjali Reddy"/></div>
-        <div class="frow"><label class="flbl">Self-reported ID (not verified) *</label><input class="finp" id="inspId" type="text" placeholder="e.g. FSSAI/TS/INS/2024/0087"/></div>
+        <div class="frow"><label class="flbl">Self-reported ID (not verified) *</label><input class="finp" id="inspId" type="text" placeholder="Self-reported demo ID (not verified)"/></div>
         <div class="frow"><label class="flbl">Designation</label><input class="finp" id="inspDes" type="text" placeholder="e.g. Senior Food Safety Officer, GHMC"/></div>
         <div class="frow"><label class="flbl">Audit Reference Number</label><input class="finp" id="inspRef" type="text" placeholder="Optional"/></div>
         <div style="font-size:.7rem;color:#1D4ED8;margin-top:.2rem;font-weight:400;">Submitting false credentials is a cognizable offence under FSSAI Act 2006.</div>
@@ -572,7 +572,7 @@ function showDetail(id){
     const isI=r.role==='inspector';
     return `<div class="rep-row">
       <div class="rep-av ${isI?'insp':'cust'}">${isI?initials(r.inspName||'IN'):'?'}</div>
-      <div style="flex:1;min-width:0"><div class="rep-who">${isI?'Unverified Demo Entry':'Anonymous Citizen'}</div>${isI?`<div style="font-size:.66rem;color:var(--txt3)">Self-reported: ${escapeHtml(r.inspName||'name not provided')} · ID: ${escapeHtml(r.inspId||'not provided')} · not authenticated</div>`:''}<div class="rep-note">${r.adulterationReported?'<div class="tag t-ad">Community allegation — unverified</div>':''}<div class="rep-note">${escapeHtml(r.note||'No additional notes.')}</div></div>
+      <div style="flex:1;min-width:0"><div class="rep-who">${isI?'Unverified Demo Entry':'Anonymous Citizen'}</div>${isI?`<div style="font-size:.66rem;color:var(--txt3)">Self-reported: ${escapeHtml(r.inspName||'name not provided')} · ID: ${escapeHtml(r.inspId||'not provided')} · not authenticated</div>`:''}${r.adulterationReported?'<div class="tag t-ad">Community allegation — unverified</div>':''}<div class="rep-note">${escapeHtml(r.note||'No additional notes.')}</div>
       <div class="rep-date">${r.date}</div>
     </div>`;
   }).join(''):'<div style="padding:.6rem 0;font-size:.8rem;color:var(--txt3);font-weight:400;">No community reports yet.</div>';
@@ -585,7 +585,7 @@ function showDetail(id){
         <div class="detail-meta">${h.cuisine} · ${h.type} · ${h.area}</div>
         <div style="margin-top:.6rem;display:flex;gap:5px;flex-wrap:wrap">
           <span class="tag t-ty">${h.type}</span>
-          ${h.fs==='Valid'?`<span class="tag t-fs">FSSAI ${h.fssai}</span>`:h.fs==='Expired'?'<span class="tag t-e">FSSAI Expired</span>':'<span class="tag t-n">No FSSAI</span>'}
+          ${h.fs==='Unverified demo'?'<span class="tag t-n">Demo — license not verified</span>':h.fs==='Valid'?`<span class="tag t-fs">FSSAI ${escapeHtml(h.fssai)}</span>`:h.fs==='Expired'?'<span class="tag t-e">FSSAI Expired</span>':'<span class="tag t-n">No FSSAI</span>'}
           ${h.chain?`<span class="tag t-br">${h.chain}</span>`:''}
           ${h.adult?'<span class="tag t-ad">Adulteration flagged</span>':''}
         </div>
