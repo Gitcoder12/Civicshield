@@ -28,5 +28,9 @@ jobs:
         run: ruff check backend_app.py tests
       - name: Check formatting
         run: ruff format --check backend_app.py tests
+      - name: Check browser JavaScript syntax
+        run: |
+          python scripts/extract_inline_js.py
+          node --check /tmp/civicshield-inline.js
       - name: Run tests
         run: pytest -q
