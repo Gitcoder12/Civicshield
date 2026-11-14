@@ -1,11 +1,13 @@
 # CivicShield — Activity Log
 
 **Repository:** https://github.com/Gitcoder12/Civicshield  
-**Snapshot:** 2026-11-13
+**Snapshot:** 2026-11-14
 
 ## Verified history
 
-2026-11-13: PR #3 created to fix Flask root routing, declare Flask dependencies, default debug mode to off, add / and /hotels smoke tests, and add CI. Current PR-head backend check passed. PR is draft and unmerged: https://github.com/Gitcoder12/Civicshield/pull/3
+2026-11-13: PR #3 created to fix Flask root routing, declare Flask dependencies, default debug mode to off, add / and /hotels smoke tests, and add CI. At the time of this entry, the PR was draft and unmerged. The PR-head backend check was reported as passed; no production deployment was claimed: https://github.com/Gitcoder12/Civicshield/pull/3
+
+2026-11-14: PR #3 was merged into `main` at commit `69cc6322de2da167026774009d5a5f0021f33caf`. The push-triggered CivicShield Tests workflow completed successfully on that exact commit (run [43585405291](https://github.com/Gitcoder12/Civicshield/actions/runs/43585405291)). The committed test suite checks that `/` serves the checked-in page and that `/hotels` reads the configured data file. It does not yet test report submission, authorization, score integrity, or data mutation. A green CI run is not evidence of production deployment or full security approval.
 
 ## Log new work here
 
