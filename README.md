@@ -149,3 +149,22 @@ This section supplements the maintainer-authored README above. The original text
 
 ### Data-provenance warning
 The original README's claims about FSSAI records, inspection counts, and live API verification are preserved from the maintainer-authored version; they have not been independently verified in this audit. Do not present any official-looking ID, score, inspection, inspector, owner or phone field as verified without a traceable source. Draft PR #1 was closed without merging and substituted synthetic placeholder venue rows; that PR is not an approved data source or replacement dataset.
+
+---
+
+## Engineering Audit & Handover — 2026-11-17
+
+**Review scope:** default branch `main`; static inspection of `backend_app.py`. Runtime tests were not executed.
+
+### Confirmed findings
+- The Flask backend enables unrestricted CORS with `CORS(app)`.
+- Reports and venue data are persisted by directly rewriting JSON files (`reports.json` and `hotels.json`). This is not a concurrency-safe transactional datastore; simultaneous writes can overwrite one another or leave partial files if interrupted.
+- The inspected `POST /submit_report` route accepts report data and updates scores/flags. Authentication, authorization, rate limiting, and strong schema validation were not visible in the inspected route.
+- The README describes official inspector audits and FSSAI verification. The inspected backend code alone does not establish that submitted reports are official or that license records are live-verified.
+
+### Next actions
+1. Restrict CORS to approved origins and add authentication/role checks for privileged inspector actions.
+2. Validate request schemas, report modes, checklist types, notes length, and venue IDs; add abuse/rate controls.
+3. Move concurrent writes to a transactional database (or use atomic file replacement for a strictly local demo) and attach provenance to official verification claims.
+
+**Verification status:** backend source inspection only; frontend integration, dataset provenance, deployment, and tests remain unverified. Do not treat citizen reports as official findings.
