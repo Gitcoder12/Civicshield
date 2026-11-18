@@ -168,3 +168,10 @@ The original README's claims about FSSAI records, inspection counts, and live AP
 3. Move concurrent writes to a transactional database (or use atomic file replacement for a strictly local demo) and attach provenance to official verification claims.
 
 **Verification status:** backend source inspection only; frontend integration, dataset provenance, deployment, and tests remain unverified. Do not treat citizen reports as official findings.
+
+---
+
+## Examples Used
+- Checking a restaurant's food-safety licence
+- Comparing citizen hygiene reports with inspector audits
+- Exploring food-safety patterns across Hyderabad areas
