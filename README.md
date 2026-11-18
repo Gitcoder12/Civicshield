@@ -168,3 +168,27 @@ The original README's claims about FSSAI records, inspection counts, and live AP
 3. Move concurrent writes to a transactional database (or use atomic file replacement for a strictly local demo) and attach provenance to official verification claims.
 
 **Verification status:** backend source inspection only; frontend integration, dataset provenance, deployment, and tests remain unverified. Do not treat citizen reports as official findings.
+
+
+---
+
+## Branch Activity & Development History
+
+**Audit date:** 2026-11-18 · **Comparison base:** `main`
+
+| Branch | Difference from `main` | Observed work / changed paths |
+|---|---:|---|
+| `docs/portfolio-operating-kit-2026-11` | 10 ahead / 9 behind | Activity log, agent guidance, company-fit notes, contributor guide, feature plan and README support docs |
+| `docs/project-status-2026-11-16` | Comparison unavailable | Branch was listed during discovery, but GitHub returned 404 for the comparison. Recheck branch existence before documenting its diff |
+| `docs/status-inventory-2026-11-16-v1` | 1 / 1 | Project status inventory: `PROJECT_STATUS.md` |
+| `fix/backend-static-root-and-smoke-tests` | 0 / 4 | No unique commits relative to current `main`; branch is behind |
+| `security/backend-hardening` | 28 / 9 | Backend hardening, CI workflow, configuration, data fixtures and backend tests |
+| `v2-ultra-cooked` | 19 / 9 | New v2 application, OSM data module, smoke/data tests, CI workflow and dependency updates |
+
+### Open pull requests observed during this audit
+
+- [PR #6 — project status snapshot](https://github.com/Gitcoder12/Civicshield/pull/6)
+- [PR #5 — project status snapshot](https://github.com/Gitcoder12/Civicshield/pull/5)
+- [PR #4 — project roadmap, activity log and contributor guides](https://github.com/Gitcoder12/Civicshield/pull/4)
+
+**Review note:** Backend hardening and the v2 application are substantial code changes, but changed paths do not establish that tests pass or that security controls are effective. Verify exact PR head/base, CI, data handling and runtime behavior before merging. No branches have been merged or deleted by this documentation update.
