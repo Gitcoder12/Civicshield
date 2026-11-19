@@ -175,3 +175,27 @@ The original README's claims about FSSAI records, inspection counts, and live AP
 - Checking a restaurant's food-safety licence
 - Comparing citizen hygiene reports with inspector audits
 - Exploring food-safety patterns across Hyderabad areas
+
+
+---
+
+## Comparison with Existing Open-Source Projects
+
+CivicShield is documented as a Hyderabad-focused food-safety transparency demo combining venue information, FSSAI status, citizen reports, inspector audits and dish-level discovery. The following projects overlap with data transparency or civic reporting, but are not exact restaurant-safety equivalents.
+
+| Project | Established focus | Relationship to CivicShield |
+|---|---|---|
+| [Open Food Facts](https://github.com/openfoodfacts/openfoodfacts-server) | Open food-product database with ingredients, nutrition and product data | A mature open food-data ecosystem; CivicShield focuses on venue hygiene, licensing and local citizen/inspector reporting rather than packaged-product composition. |
+| [FixMyStreet](https://github.com/mysociety/fixmystreet) | Citizen reporting and routing of local public-service problems | A useful civic-reporting and moderation reference; CivicShield applies a domain-specific food-establishment checklist and safety record. |
+| [Decidim](https://github.com/decidim/decidim) | Participatory democracy and civic engagement platform | A broader participation platform; CivicShield's intended workflow is narrower and centred on food-safety transparency. |
+
+### Where CivicShield is different
+- **Food-establishment focus:** the documented interface brings venue licensing, hygiene reports, inspector audits and dish information into one place.
+- **Citizen plus official evidence:** it distinguishes anonymous citizen submissions from attributed inspector records, rather than treating every report as the same evidence class.
+- **Local branch comparison:** the README describes Hyderabad-area coverage and chain-branch comparisons as a specific local discovery use case.
+
+### Where established projects are stronger
+Open Food Facts and the civic platforms have mature data contribution, governance or moderation ecosystems. CivicShield's current dataset and live-verification claims require careful validation: a displayed licence status, inspector identity, venue score or dish rating must be backed by a traceable source and retrieval date. A demo dataset is not an official FSSAI register.
+
+### Safety, fairness and evidence requirements
+Do not label a venue unsafe or non-compliant based only on unverified user submissions. Publish the scoring method, evidence class, date, correction/appeal process and data provenance. Verify official FSSAI data access and terms before describing an API integration as live. This is a documented-scope comparison, not an official regulatory assessment.
