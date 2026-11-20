@@ -9,9 +9,17 @@ A citizen-powered food safety transparency platform for Hyderabad — combining 
 
 ---
 
-## Live Demo
+## Open the website locally
 
-Open `index.html` directly in any browser. No server, no setup, no installation required.
+1. Open the repository folder in VS Code.
+2. In the integrated terminal, run:
+
+```bash
+python -m http.server 8000
+```
+
+3. Open **http://localhost:8000** in Chrome, Firefox, or Edge. The browser demo is served from `index.html`; no frontend build or npm installation is required.
+4. Keep the terminal open while using the demo. Press **Ctrl+C** to stop the server.
 
 ---
 
@@ -53,14 +61,9 @@ CivicShield/
 
 ---
 
-## Running the Demo
+## Optional Flask API
 
-**Browser (instant — no setup):**
-```bash
-# Just open index.html in Chrome, Firefox, or Edge
-```
-
-**Flask backend (production):**
+The static browser demo can be used independently. To start the separate Flask API:
 ```bash
 pip install flask flask-cors
 python backend_app.py
